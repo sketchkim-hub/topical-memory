@@ -1,0 +1,1478 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>네비게이토 성경암송 테스트</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&family=Noto+Sans+KR:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --gold: #C9A84C; --gold-light: #E8D5A0; --gold-dark: #8B6914;
+  --brown: #5C3D1E; --brown-light: #8B6040; --cream: #FAF7F0;
+  --cream-dark: #F0EAD8; --text: #2C1E0A; --text-muted: #7A6040;
+  --wheel-inner: #6B4516; --success: #2E7D32; --error: #C62828; --warning: #E65100;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--text);min-height:100vh;}
+.header{background:linear-gradient(135deg,var(--brown) 0%,var(--wheel-inner) 100%);position:relative;overflow:hidden;}
+.header-inner{display:flex;align-items:center;gap:24px;padding:20px 32px;position:relative;z-index:2;}
+.wheel-logo{width:80px;height:80px;flex-shrink:0;}
+.header-text h1{font-family:'Noto Serif KR',serif;font-size:22px;font-weight:700;color:var(--gold-light);letter-spacing:1px;}
+.header-text p{font-size:12px;color:rgba(232,213,160,0.7);margin-top:3px;letter-spacing:2px;}
+.header-bg{position:absolute;right:-10px;top:50%;transform:translateY(-50%);font-size:90px;font-weight:700;color:rgba(255,255,255,0.03);font-family:'Noto Serif KR',serif;user-select:none;pointer-events:none;white-space:nowrap;}
+.user-bar{background:var(--brown);border-top:1px solid rgba(201,168,76,0.3);padding:8px 32px;display:flex;align-items:center;justify-content:space-between;}
+.user-info{display:flex;align-items:center;gap:10px;}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:var(--gold-dark);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:var(--cream);}
+.user-name{font-size:13px;color:var(--gold-light);}
+.btn-sm{padding:4px 12px;border-radius:12px;border:1px solid var(--gold-dark);background:transparent;color:var(--gold-light);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.btn-sm:hover{background:rgba(201,168,76,0.2);}
+.nav-tabs{background:var(--brown-light);display:flex;padding:0 24px;gap:0;overflow-x:auto;}
+.nav-tab{padding:12px 20px;font-size:13px;color:rgba(232,213,160,0.6);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:'Noto Sans KR',sans-serif;background:none;border-top:none;border-left:none;border-right:none;transition:all 0.2s;}
+.nav-tab:hover{color:var(--gold-light);}
+.nav-tab.active{color:var(--gold);border-bottom:2px solid var(--gold);}
+.main{padding:24px 32px;max-width:960px;margin:0 auto;}
+.section{display:none;}
+.section.active{display:block;}
+
+/* 로그인 */
+.login-card{max-width:400px;margin:40px auto;background:white;border-radius:16px;padding:40px;box-shadow:0 4px 24px rgba(92,61,30,0.15);text-align:center;}
+.login-card h2{font-family:'Noto Serif KR',serif;font-size:20px;color:var(--brown);margin-bottom:8px;}
+.login-card p{font-size:13px;color:var(--text-muted);margin-bottom:28px;}
+.form-group{margin-bottom:16px;text-align:left;}
+.form-group label{font-size:12px;color:var(--text-muted);margin-bottom:4px;display:block;}
+.form-group input{width:100%;padding:10px 14px;border:1px solid #E0D8C8;border-radius:8px;font-size:14px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--text);}
+.form-group input:focus{outline:none;border-color:var(--gold);}
+.btn-primary{width:100%;padding:12px;background:var(--brown);color:var(--gold-light);border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;}
+.btn-primary:hover{background:var(--wheel-inner);}
+
+/* 홈 메뉴 */
+.page-title{font-family:'Noto Serif KR',serif;font-size:20px;color:var(--brown);margin-bottom:4px;}
+.page-sub{font-size:13px;color:var(--text-muted);margin-bottom:24px;}
+.menu-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:16px;margin-top:24px;}
+.menu-card{background:white;border-radius:12px;padding:24px;cursor:pointer;border:2px solid transparent;transition:all 0.2s;box-shadow:0 2px 8px rgba(92,61,30,0.08);}
+.menu-card:hover{border-color:var(--gold);transform:translateY(-2px);}
+.menu-card .icon{font-size:32px;margin-bottom:12px;}
+.menu-card h3{font-size:15px;font-weight:600;color:var(--brown);margin-bottom:6px;}
+.menu-card p{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.menu-card .badge{display:inline-block;margin-top:10px;padding:3px 10px;border-radius:10px;font-size:11px;background:var(--cream-dark);color:var(--brown);}
+
+/* 시리즈 선택 */
+.series-list{display:flex;flex-direction:column;gap:10px;}
+.series-item{background:white;border-radius:10px;padding:14px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;border:1px solid var(--cream-dark);transition:all 0.2s;}
+.series-item:hover{border-color:var(--gold);background:var(--cream);}
+.series-badge{width:44px;height:44px;border-radius:50%;background:var(--brown);display:flex;align-items:center;justify-content:center;color:var(--gold-light);font-size:12px;font-weight:700;flex-shrink:0;}
+.series-info h4{font-size:14px;font-weight:600;color:var(--text);}
+.series-info p{font-size:12px;color:var(--text-muted);}
+.series-count{margin-left:auto;font-size:12px;color:var(--text-muted);background:var(--cream-dark);padding:3px 10px;border-radius:10px;}
+
+/* ── 60구절 일괄 테스트 ── */
+.batch-header{background:white;border-radius:12px;padding:20px 24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(92,61,30,0.08);}
+.batch-title{font-family:'Noto Serif KR',serif;font-size:18px;font-weight:700;color:var(--brown);margin-bottom:4px;}
+.batch-sub{font-size:13px;color:var(--text-muted);}
+.verse-list-panel{background:white;border-radius:12px;padding:20px 24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(92,61,30,0.08);}
+.verse-list-panel h3{font-size:15px;font-weight:600;color:var(--brown);margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid var(--cream-dark);}
+.verse-ref-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:8px;}
+.verse-ref-item{background:var(--cream);border-radius:8px;padding:10px 14px;border-left:3px solid var(--gold);}
+.verse-ref-item .vr-num{font-size:11px;color:var(--text-muted);margin-bottom:2px;}
+.verse-ref-item .vr-topic{font-size:13px;font-weight:600;color:var(--brown);}
+.verse-ref-item .vr-ref{font-size:12px;color:var(--gold-dark);}
+.answer-sheet{background:white;border-radius:12px;padding:24px;box-shadow:0 2px 8px rgba(92,61,30,0.08);margin-bottom:20px;}
+.answer-sheet h3{font-size:15px;font-weight:600;color:var(--brown);margin-bottom:6px;}
+.answer-sheet-sub{font-size:12px;color:var(--text-muted);margin-bottom:16px;}
+.answer-block{border:1px solid var(--cream-dark);border-radius:10px;padding:16px;margin-bottom:12px;background:var(--cream);}
+.answer-block-num{font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:8px;}
+.answer-row{display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap;}
+.ans-input{padding:8px 12px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:white;color:var(--text);}
+.ans-input:focus{outline:none;border-color:var(--gold);}
+.ans-title{flex:1;min-width:120px;}
+.ans-ref{flex:1;min-width:140px;}
+.ans-body{width:100%;min-height:80px;resize:vertical;font-family:'Noto Serif KR',serif;line-height:1.8;font-size:13px;}
+.voice-btn{padding:6px 12px;border-radius:8px;border:1px solid #A5D6A7;background:#E8F5E9;color:#2E7D32;font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap;}
+.voice-btn.recording{background:#FFEBEE;color:#C62828;border-color:#EF9A9A;animation:pulse 1s infinite;}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:0.6}}
+.action-bar{display:flex;gap:12px;flex-wrap:wrap;padding:16px 0;}
+.btn-action{padding:11px 24px;border-radius:8px;border:none;font-size:14px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;display:flex;align-items:center;gap:7px;transition:all 0.2s;}
+.btn-submit{background:var(--brown);color:var(--gold-light);}
+.btn-submit:hover{background:var(--wheel-inner);}
+.btn-submit:disabled{background:#ccc;cursor:not-allowed;}
+.btn-voice-all{background:#E8F5E9;color:#2E7D32;border:1px solid #A5D6A7;}
+.btn-secondary{background:var(--cream-dark);color:var(--text-muted);}
+.btn-secondary:hover{background:#E0D8C8;}
+.btn-ai{background:linear-gradient(135deg,#E8EAF6 0%,#F3E5F5 100%);color:#4527A0;border:1px solid #B39DDB;}
+
+/* 채점 결과 */
+.grading-overlay{background:white;border-radius:12px;padding:24px;margin-bottom:20px;box-shadow:0 2px 8px rgba(92,61,30,0.08);}
+.grading-status{text-align:center;padding:40px 20px;}
+.grading-spinner{width:48px;height:48px;border:4px solid var(--cream-dark);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;margin:0 auto 16px;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.grading-log{background:var(--cream);border-radius:8px;padding:12px 16px;font-size:12px;color:var(--text-muted);line-height:1.8;max-height:120px;overflow-y:auto;margin-top:12px;font-family:monospace;}
+
+/* 결과 카드 */
+.result-grid{display:flex;flex-direction:column;gap:12px;}
+.result-card{border-radius:10px;padding:18px 20px;border-left:4px solid;}
+.result-card.correct{border-color:var(--success);background:#F1F8F1;}
+.result-card.partial{border-color:var(--warning);background:#FFF8F2;}
+.result-card.wrong{border-color:var(--error);background:#FFF5F5;}
+.result-card.skip{border-color:#999;background:#F8F8F8;}
+.rc-header{display:flex;align-items:baseline;gap:12px;margin-bottom:10px;}
+.rc-num{font-size:12px;color:var(--text-muted);font-weight:600;}
+.rc-topic{font-size:15px;font-weight:700;color:var(--text);}
+.rc-ref{font-size:13px;color:var(--gold-dark);}
+.rc-score{margin-left:auto;font-size:20px;font-weight:700;}
+.rc-score.correct{color:var(--success);}
+.rc-score.partial{color:var(--warning);}
+.rc-score.wrong{color:var(--error);}
+.rc-detail{font-size:12px;color:var(--text-muted);margin-bottom:8px;}
+.rc-compare{font-size:13px;font-family:'Noto Serif KR',serif;line-height:1.9;}
+.rc-my-label{font-size:11px;color:var(--text-muted);font-weight:600;margin-bottom:3px;}
+.rc-original{font-size:13px;font-family:'Noto Serif KR',serif;line-height:1.9;color:var(--text);padding:10px 14px;background:rgba(201,168,76,0.06);border-radius:6px;margin-top:8px;}
+.diff-ok{color:var(--success);}
+.diff-err{color:var(--error);background:#FFEBEE;padding:1px 2px;border-radius:3px;text-decoration:line-through;}
+.diff-miss{color:var(--error);font-weight:700;background:#FFEBEE;padding:1px 4px;border-radius:3px;}
+
+/* 요약 */
+.summary-top{background:white;border-radius:16px;padding:32px;box-shadow:0 4px 24px rgba(92,61,30,0.12);text-align:center;margin-bottom:20px;}
+.summary-score-big{font-size:72px;font-weight:700;font-family:'Noto Serif KR',serif;line-height:1;margin:12px 0;}
+.summary-grade{font-size:15px;padding:6px 20px;border-radius:20px;display:inline-block;margin-bottom:16px;font-weight:600;}
+.g-s{background:#FFF8E1;color:#F57F17;} .g-a{background:#E8F5E9;color:#2E7D32;}
+.g-b{background:#E3F2FD;color:#1565C0;} .g-c{background:#FFF3E0;color:#E65100;} .g-f{background:#FFEBEE;color:#B71C1C;}
+.summary-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:20px;}
+.stat-box{background:var(--cream);border-radius:10px;padding:14px;}
+.stat-num{font-size:22px;font-weight:700;color:var(--brown);}
+.stat-lbl{font-size:11px;color:var(--text-muted);margin-top:2px;}
+
+/* 기록 */
+.chart-wrap{background:white;border-radius:12px;padding:20px;margin-bottom:20px;box-shadow:0 2px 8px rgba(92,61,30,0.08);}
+.chart-wrap h3{font-size:15px;font-weight:600;color:var(--text);margin-bottom:16px;}
+.chart-bars{display:flex;align-items:flex-end;gap:8px;height:120px;}
+.bar-wrap{display:flex;flex-direction:column;align-items:center;gap:4px;flex:1;}
+.bar{width:100%;border-radius:4px 4px 0 0;min-height:4px;}
+.bar-lbl{font-size:10px;color:var(--text-muted);}
+.rec-list{display:flex;flex-direction:column;gap:8px;}
+.rec-item{background:white;border-radius:10px;padding:14px 18px;border:1px solid var(--cream-dark);display:flex;align-items:center;gap:14px;}
+.rec-date{font-size:12px;color:var(--text-muted);min-width:90px;}
+.rec-info h4{font-size:14px;font-weight:500;color:var(--text);}
+.rec-info p{font-size:12px;color:var(--text-muted);}
+.rec-score{margin-left:auto;font-size:20px;font-weight:700;}
+
+/* AI 도우미 */
+.ai-guide{background:white;border-radius:12px;padding:24px;box-shadow:0 2px 8px rgba(92,61,30,0.08);}
+.ai-option{padding:14px 16px;border:1px solid var(--cream-dark);border-radius:10px;margin-bottom:10px;cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:12px;}
+.ai-option:hover{border-color:#B39DDB;background:#F3E5F5;}
+.ai-option .ai-icon{font-size:24px;}
+.ai-option h4{font-size:14px;font-weight:600;color:var(--text);}
+.ai-option p{font-size:12px;color:var(--text-muted);}
+.ai-answer-box{background:#F8F5FF;border-radius:10px;padding:16px;margin-top:16px;font-size:14px;line-height:1.9;color:var(--text);white-space:pre-wrap;}
+.ai-loading{color:var(--text-muted);font-style:italic;}
+
+/* 열람 */
+.browse-series{margin-bottom:28px;}
+.browse-series-title{font-family:'Noto Serif KR',serif;font-size:16px;font-weight:700;color:var(--brown);margin-bottom:12px;padding-bottom:8px;border-bottom:2px solid var(--cream-dark);}
+.browse-verse{background:white;border-radius:10px;padding:14px 18px;margin-bottom:8px;border:1px solid var(--cream-dark);}
+.browse-verse-top{display:flex;justify-content:space-between;margin-bottom:8px;}
+.browse-verse-topic{font-size:13px;font-weight:600;color:var(--brown);}
+.browse-verse-ref{font-size:12px;color:var(--gold-dark);background:rgba(201,168,76,0.1);padding:2px 10px;border-radius:10px;}
+.browse-verse-text{font-family:'Noto Serif KR',serif;font-size:13px;line-height:1.8;color:var(--text);}
+
+.back-btn{display:flex;align-items:center;gap:6px;padding:8px 0;font-size:13px;color:var(--text-muted);cursor:pointer;background:none;border:none;font-family:'Noto Sans KR',sans-serif;margin-bottom:16px;}
+.back-btn:hover{color:var(--brown);}
+.voice-status{font-size:11px;color:var(--text-muted);margin-top:4px;min-height:16px;}
+.cat-tab{padding:7px 16px;border-radius:20px;border:1px solid var(--cream-dark);background:white;color:var(--text-muted);font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all 0.2s;}
+.cat-tab:hover{border-color:var(--gold);}
+.cat-tab.active{background:var(--brown);color:var(--gold-light);border-color:var(--brown);}
+@media(max-width:600px){.main{padding:12px;}.summary-stats{grid-template-columns:repeat(2,1fr);}.answer-row{flex-direction:column;}}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-inner">
+    <svg class="wheel-logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="100" cy="100" r="95" fill="none" stroke="#C9A84C" stroke-width="8"/>
+      <circle cx="100" cy="100" r="78" fill="none" stroke="#8B6914" stroke-width="3"/>
+      <rect x="96" y="10" width="8" height="180" fill="#8B6914"/>
+      <rect x="10" y="96" width="180" height="8" fill="#8B6914"/>
+      <circle cx="100" cy="100" r="22" fill="#C9A84C"/>
+      <circle cx="100" cy="100" r="16" fill="#8B5E2A"/>
+      <text x="100" y="106" font-size="11" text-anchor="middle" fill="#FAF7F0" font-weight="700" font-family="serif">✝</text>
+      <text x="100" y="42" font-size="9" text-anchor="middle" fill="#E8D5A0" font-family="serif">PRAYER</text>
+      <text x="100" y="168" font-size="8" text-anchor="middle" fill="#E8D5A0" font-family="serif">THE WORD</text>
+      <text x="30" y="103" font-size="7" text-anchor="middle" fill="#E8D5A0" font-family="serif" transform="rotate(-90,30,103)">WITNESSING</text>
+      <text x="170" y="103" font-size="7" text-anchor="middle" fill="#E8D5A0" font-family="serif" transform="rotate(90,170,103)">FELLOWSHIP</text>
+    </svg>
+    <div class="header-text">
+      <h1>네비게이토 주제별 성경암송</h1>
+      <p>The Navigators Scripture Memory System</p>
+    </div>
+  </div>
+  <div class="header-bg">SCRIPTURE</div>
+</header>
+
+<div class="user-bar" id="userBar" style="display:none">
+  <div class="user-info">
+    <div class="user-avatar" id="userAvatar">?</div>
+    <span class="user-name" id="userNameDisplay">사용자</span>
+  </div>
+  <div style="display:flex;gap:8px">
+    <button class="btn-sm" onclick="goSection('home')">🏠 홈</button>
+    <button class="btn-sm" onclick="logout()">로그아웃</button>
+  </div>
+</div>
+
+<nav class="nav-tabs" id="mainNav" style="display:none">
+  <button class="nav-tab active" onclick="goSection('home')">홈</button>
+  <button class="nav-tab" onclick="goSection('test-select')">테스트</button>
+  <button class="nav-tab" onclick="goSection('records')">기록</button>
+  <button class="nav-tab" onclick="goSection('ai-guide')">AI 도우미</button>
+  <button class="nav-tab" onclick="goSection('browse')">구절 열람</button>
+</nav>
+
+<div class="main">
+
+<!-- 로그인 / 회원가입 -->
+<div class="section active" id="sec-login">
+  <div class="login-card">
+    <svg width="64" height="64" viewBox="0 0 200 200" style="display:block;margin:0 auto 16px">
+      <circle cx="100" cy="100" r="95" fill="#5C3D1E" stroke="#C9A84C" stroke-width="6"/>
+      <circle cx="100" cy="100" r="22" fill="#C9A84C"/><circle cx="100" cy="100" r="14" fill="#8B5E2A"/>
+      <text x="100" y="107" font-size="14" text-anchor="middle" fill="#FAF7F0" font-weight="700" font-family="serif">✝</text>
+      <rect x="97" y="12" width="6" height="70" fill="#C9A84C"/><rect x="97" y="118" width="6" height="70" fill="#C9A84C"/>
+      <rect x="12" y="97" width="70" height="6" fill="#C9A84C"/><rect x="118" y="97" width="70" height="6" fill="#C9A84C"/>
+    </svg>
+    <h2>성경암송 테스트 시스템</h2>
+    <p>The Navigators Scripture Memory</p>
+
+    <!-- 탭 -->
+    <div style="display:flex;border:1px solid var(--cream-dark);border-radius:10px;overflow:hidden;margin:18px 0 20px">
+      <button id="tabLogin" onclick="switchAuthTab('login')"
+        style="flex:1;padding:10px;border:none;background:var(--brown);color:var(--gold-light);font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all 0.2s">
+        🔑 로그인
+      </button>
+      <button id="tabJoin" onclick="switchAuthTab('join')"
+        style="flex:1;padding:10px;border:none;background:var(--cream-dark);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all 0.2s">
+        ✏️ 회원가입
+      </button>
+    </div>
+
+    <!-- 로그인 폼 -->
+    <div id="formLogin">
+      <div class="form-group"><label>아이디</label><input type="text" id="loginName" placeholder="가입한 아이디" onkeydown="if(event.key==='Enter')login()"/></div>
+      <div class="form-group"><label>비밀번호 (PIN)</label><input type="password" id="loginPin" placeholder="가입시 설정한 PIN" maxlength="20" onkeydown="if(event.key==='Enter')login()"/></div>
+      <div id="loginMsg" style="min-height:18px;font-size:12px;color:var(--error);margin-bottom:8px;text-align:left"></div>
+      <button class="btn-primary" onclick="login()">로그인</button>
+      <div style="margin-top:10px;font-size:12px;color:var(--text-muted)">계정이 없으시면 회원가입 탭에서 가입하세요</div>
+    </div>
+
+    <!-- 회원가입 폼 -->
+    <div id="formJoin" style="display:none">
+      <div class="form-group"><label>아이디 <span style="color:#999;font-size:10px">(한글·영문 가능)</span></label><input type="text" id="joinName" placeholder="사용할 아이디" oninput="checkIdAvail()" onkeydown="if(event.key==='Enter')register()"/></div>
+      <div id="idCheck" style="min-height:18px;font-size:12px;margin:-8px 0 8px;text-align:left"></div>
+      <div class="form-group"><label>비밀번호 (PIN) <span style="color:#999;font-size:10px">(숫자·문자 조합)</span></label><input type="password" id="joinPin" placeholder="4~10자리" maxlength="20" onkeydown="if(event.key==='Enter')register()"/></div>
+      <div class="form-group"><label>비밀번호 확인</label><input type="password" id="joinPin2" placeholder="비밀번호 다시 입력" maxlength="20" onkeydown="if(event.key==='Enter')register()"/></div>
+      <div id="joinMsg" style="min-height:18px;font-size:12px;color:var(--error);margin-bottom:8px;text-align:left"></div>
+      <button class="btn-primary" onclick="register()">가입하기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 홈 -->
+<div class="section" id="sec-home">
+  <div style="margin-bottom:24px">
+    <div class="page-title">안녕하세요, <span id="homeUserName"></span>님 👋</div>
+    <div class="page-sub">오늘도 말씀을 마음에 새겨요</div>
+  </div>
+  <div class="menu-grid">
+    <div class="menu-card" onclick="goSection('test-select')">
+      <div class="icon">📝</div>
+      <h3>파트별 테스트</h3>
+      <p>파트를 선택하고 해당 구절 전체를 한번에 작성 후 AI가 일괄 채점</p>
+      <span class="badge">AI 채점</span>
+    </div>
+    <div class="menu-card" onclick="goSection('records')">
+      <div class="icon">📊</div>
+      <h3>내 학습 기록</h3>
+      <p>날짜별 시험 결과 확인 및 성장 그래프</p>
+      <span class="badge">진도 확인</span>
+    </div>
+    <div class="menu-card" onclick="goSection('ai-guide')">
+      <div class="icon">🤖</div>
+      <h3>AI 학습 도우미</h3>
+      <p>Claude AI가 구절 이해, 암송 팁, 퀴즈를 도와줍니다</p>
+      <span class="badge">AI 활용</span>
+    </div>
+    <div class="menu-card" onclick="goSection('browse')">
+      <div class="icon">📖</div>
+      <h3>구절 열람</h3>
+      <p>모든 구절을 시리즈별로 읽고 학습합니다</p>
+      <span class="badge">학습 자료</span>
+    </div>
+  </div>
+  <div style="margin-top:28px;background:white;border-radius:12px;padding:20px;box-shadow:0 2px 8px rgba(92,61,30,0.08)">
+    <div style="font-size:14px;font-weight:600;color:var(--brown);margin-bottom:12px">📖 오늘의 말씀</div>
+    <div id="todayVerse" style="font-family:'Noto Serif KR',serif;font-size:14px;line-height:1.9;padding:14px;background:var(--cream);border-radius:8px;border-left:3px solid var(--gold)"></div>
+    <div id="todayRef" style="font-size:12px;color:var(--text-muted);margin-top:6px;text-align:right"></div>
+  </div>
+</div>
+
+<!-- 테스트 선택 -->
+<div class="section" id="sec-test-select">
+  <div class="page-title">파트 선택</div>
+  <div class="page-sub">테스트할 파트를 선택하세요. 해당 파트의 구절 전체를 한 화면에서 작성 후 AI가 일괄 채점합니다.</div>
+  <div class="series-list" id="seriesList"></div>
+</div>
+
+<!-- ══ 60구절 일괄 테스트 ══ -->
+<div class="section" id="sec-batch-test">
+  <button class="back-btn" onclick="goSection('test-select')">← 파트 선택으로</button>
+
+  <div class="batch-header">
+    <div class="batch-title" id="batchTitle">A파트 — 새로운 삶</div>
+    <div class="batch-sub" id="batchSub">12구절 전체를 아래 답안지에 순서대로 작성하고 AI 채점을 누르세요</div>
+  </div>
+
+  <!-- 구절 목록 (참조용) -->
+  <!-- 답안지 -->
+  <div class="answer-sheet">
+    <h3>✏️ 답안지</h3>
+    <div class="answer-sheet-sub">각 구절의 제목(주제), 장절, 본문을 순서대로 입력하세요. 음성 입력도 사용 가능합니다.</div>
+    <div id="answerBlocks"></div>
+    <div class="action-bar">
+      <button class="btn-action btn-submit" id="gradingBtn" onclick="submitBatchTest()">🤖 AI 채점하기</button>
+      <button class="btn-action btn-secondary" onclick="clearAll()">🗑 전체 지우기</button>
+    </div>
+  </div>
+</div>
+
+<!-- 채점 중 -->
+<div class="section" id="sec-grading">
+  <div class="grading-overlay">
+    <div class="grading-status">
+      <div class="grading-spinner"></div>
+      <div style="font-size:16px;font-weight:600;color:var(--brown);margin-bottom:8px">AI가 채점 중입니다...</div>
+      <div style="font-size:13px;color:var(--text-muted)" id="gradingMsg">답안을 분석하고 있습니다</div>
+      <div class="grading-log" id="gradingLog"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 채점 결과 -->
+<div class="section" id="sec-result">
+  <button class="back-btn" onclick="goSection('test-select')">← 파트 선택으로</button>
+  <div class="summary-top">
+    <div style="font-family:'Noto Serif KR',serif;font-size:15px;color:var(--text-muted)" id="sumSeries"></div>
+    <div class="summary-score-big" id="sumScore">0</div>
+    <div class="summary-grade" id="sumGrade">-</div>
+    <div style="font-size:13px;color:var(--text-muted)" id="sumComment"></div>
+    <div class="summary-stats">
+      <div class="stat-box"><div class="stat-num" id="sSTotal">-</div><div class="stat-lbl">총 구절</div></div>
+      <div class="stat-box"><div class="stat-num" id="sSCorrect">-</div><div class="stat-lbl">완벽 정답</div></div>
+      <div class="stat-box"><div class="stat-num" id="sSPartial">-</div><div class="stat-lbl">부분 점수</div></div>
+      <div class="stat-box"><div class="stat-num" id="sSWrong">-</div><div class="stat-lbl">미입력/오답</div></div>
+    </div>
+  </div>
+  <div class="result-grid" id="resultGrid"></div>
+  <div style="display:flex;gap:12px;flex-wrap:wrap;margin-top:20px">
+    <button class="btn-action btn-submit" style="flex:1" onclick="goSection('home')">🏠 홈으로</button>
+    <button class="btn-action btn-ai" style="flex:1" onclick="goSection('records')">📊 기록 보기</button>
+    <button class="btn-action btn-secondary" style="flex:1" onclick="goSection('test-select')">🔄 다시 테스트</button>
+  </div>
+</div>
+
+<!-- 기록 -->
+<div class="section" id="sec-records">
+  <div class="page-title">학습 기록</div>
+  <div class="page-sub">날짜별 테스트 결과</div>
+  <div class="chart-wrap"><h3>최근 점수 추이</h3><div class="chart-bars" id="recordChart"></div></div>
+  <div id="recordListEl"><div style="font-size:13px;color:var(--text-muted)">아직 기록이 없습니다.</div></div>
+</div>
+
+<!-- AI 도우미 -->
+<div class="section" id="sec-ai-guide">
+  <div class="page-title">AI 학습 도우미</div>
+  <div class="page-sub">Claude AI가 암송을 도와드립니다</div>
+  <div class="ai-guide">
+    <div class="ai-option" onclick="askAI('random_explain')"><div class="ai-icon">📖</div><div><h4>오늘의 구절 깊이 이해하기</h4><p>무작위 구절의 배경·의미·적용점을 설명</p></div></div>
+    <div class="ai-option" onclick="askAI('memory_tip')"><div class="ai-icon">🧠</div><div><h4>암송 팁 및 연상법</h4><p>구절을 더 쉽게 외울 수 있는 연상 이미지와 리듬 팁</p></div></div>
+    <div class="ai-option" onclick="askAI('quiz')"><div class="ai-icon">🎲</div><div><h4>AI 퀴즈 내기</h4><p>AI가 구절 퀴즈를 내고 대화식으로 학습</p></div></div>
+    <div class="ai-option" onclick="askAI('series_overview')"><div class="ai-icon">🗺️</div><div><h4>시리즈 전체 개요</h4><p>각 파트의 주제와 구절 연관성 설명</p></div></div>
+    <div style="margin-top:14px;display:flex;gap:8px">
+      <input type="text" id="aiCustomQ" class="ans-input" placeholder="직접 질문 (예: 빌립보서 4:13 설명해줘)" style="flex:1"/>
+      <button class="btn-action btn-ai" onclick="askAICustom()">질문</button>
+    </div>
+    <div class="ai-answer-box" id="aiAnswerBox" style="display:none"><span id="aiAnswerText" class="ai-loading">AI가 답변 중...</span></div>
+  </div>
+</div>
+
+<!-- 구절 열람 -->
+<div class="section" id="sec-browse">
+  <div class="page-title">구절 열람</div>
+  <div class="page-sub">파트별로 모든 암송 구절을 확인하세요. 파트 제목을 클릭하면 접기/펼치기 됩니다.</div>
+  <div style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:18px" id="browseCatTabs">
+    <button class="cat-btn active" onclick="setBrowseCat('all',this)">전체</button>
+    <button class="cat-btn" onclick="setBrowseCat('5·8구절',this)">5·8구절</button>
+    <button class="cat-btn" onclick="setBrowseCat('60구절',this)">60구절</button>
+    <button class="cat-btn" onclick="setBrowseCat('180구절',this)">180구절</button>
+  </div>
+  <div id="browseContent"></div>
+</div>
+
+</div><!-- /main -->
+
+<script>
+// ══════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════
+const SERIES_INFO = [
+  // 5·8구절
+  {id:"start", name:"그리스도와의 새출발 (5구절)", group:"5·8구절", color:"#8B5E2A"},
+  {id:"walk",  name:"그리스도와의 동행 (8구절)",   group:"5·8구절", color:"#6B4516"},
+  // 60구절
+  {id:"A", name:"A. 새로운 삶",              group:"60구절", color:"#2E7D32"},
+  {id:"B", name:"B. 그리스도를 전파함",       group:"60구절", color:"#1A5276"},
+  {id:"C", name:"C. 하나님을 의뢰함",         group:"60구절", color:"#6C3483"},
+  {id:"D", name:"D. 그리스도의 제자의 자격",  group:"60구절", color:"#784212"},
+  {id:"E", name:"E. 그리스도를 닮아감",       group:"60구절", color:"#1B4F72"},
+  // 180구절 - 1. 하나님을 알아감
+  {id:"H_JC1", name:"예수 그리스도",          group:"180구절", big:"1. 하나님을 알아감",   color:"#1A3A5C"},
+  {id:"H_HS1", name:"성령",                   group:"180구절", big:"1. 하나님을 알아감",   color:"#283593"},
+  {id:"H_G1",  name:"하나님",                 group:"180구절", big:"1. 하나님을 알아감",   color:"#3D2B56"},
+  // 180구절 - 2. 사랑 안에서 자라감
+  {id:"L_SP1", name:"사랑으로 말함",           group:"180구절", big:"2. 사랑 안에서 자라감", color:"#1B5E20"},
+  {id:"L_TR1", name:"사랑으로 대함",           group:"180구절", big:"2. 사랑 안에서 자라감", color:"#2E7D32"},
+  {id:"L_AC1", name:"사랑으로 행함",           group:"180구절", big:"2. 사랑 안에서 자라감", color:"#558B2F"},
+  // 180구절 - 3. 믿음 안에서 자라감
+  {id:"F_PR1", name:"약속",                   group:"180구절", big:"3. 믿음 안에서 자라감", color:"#5D4037"},
+  {id:"F_WD1", name:"말씀",                   group:"180구절", big:"3. 믿음 안에서 자라감", color:"#6D4C41"},
+  {id:"F_FA1", name:"믿음",                   group:"180구절", big:"3. 믿음 안에서 자라감", color:"#4E342E"},
+  // 180구절 - 4. 승리 안에서 행함
+  {id:"V_VI1", name:"승리",                   group:"180구절", big:"4. 승리 안에서 행함",   color:"#BF360C"},
+  {id:"V_PU1", name:"순결",                   group:"180구절", big:"4. 승리 안에서 행함",   color:"#E64A19"},
+  {id:"V_PR1", name:"기도",                   group:"180구절", big:"4. 승리 안에서 행함",   color:"#0277BD"},
+  // 180구절 - 5. 그리스도를 증거함
+  {id:"W_EV1", name:"전도",                   group:"180구절", big:"5. 그리스도를 증거함",  color:"#37474F"},
+  {id:"W_EX1", name:"변명",                   group:"180구절", big:"5. 그리스도를 증거함",  color:"#455A64"},
+  {id:"W_BE1", name:"신자의 위치",             group:"180구절", big:"5. 그리스도를 증거함",  color:"#546E7A"},
+];
+
+const VERSES = [
+  // ── 5구절: 그리스도와의 새출발 ──
+  {id:"v01",series:"start",title:"구원의 확신",ref:"요한일서 5:11,12",text:"또 증거는 이것이니, 하나님이 우리에게 영생을 주신 것과 이 생명이 그의 아들 안에 있는 그것이니라. 아들이 있는 자에게는 생명이 있고 하나님의 아들이 없는 자에게는 생명이 없느니라."},
+  {id:"v02",series:"start",title:"기도응답의 확신",ref:"요한복음 16:24",text:"지금까지는 너희가 내 이름으로 아무것도 구하지 아니하였으나, 구하라 그리하면 받으리니 너희 기쁨이 충만하리라."},
+  {id:"v03",series:"start",title:"승리의 확신",ref:"고린도전서 10:13",text:"사람이 감당할 시험밖에는 너희에게 당한 것이 없나니, 오직 하나님은 미쁘사 너희가 감당치 못할 시험당함을 허락지 아니하시고, 시험 당할 즈음에 또한 피할 길을 내사 너희로 능히 감당하게 하시느니라."},
+  {id:"v04",series:"start",title:"사죄의 확신",ref:"요한일서 1:9",text:"만일 우리가 우리 죄를 자백하면, 저는 미쁘시고 의로우사 우리 죄를 사하시며, 모든 불의에서 우리를 깨끗케 하실 것이요."},
+  {id:"v05",series:"start",title:"인도의 확신",ref:"잠언 3:5,6",text:"너는 마음을 다하여 여호와를 의뢰하고 네 명철을 의지하지 말라. 너는 범사에 그를 인정하라. 그리하면 네 길을 지도하시리라."},
+  // ── 8구절: 그리스도와의 동행 ──
+  {id:"v06",series:"walk",title:"그리스도 안의 생활",ref:"요한복음 15:5",text:"나는 포도나무요 너희는 가지니, 저가 내 안에 내가 저 안에 있으면 이 사람은 과실을 많이 맺나니 나를 떠나서는 너희가 아무것도 할 수 없음이라."},
+  {id:"v07",series:"walk",title:"하나님의 말씀에 의한 생활",ref:"사도행전 20:32",text:"지금 내가 너희를 주와 및 그 은혜의 말씀께 부탁하노니 그 말씀이 너희를 능히 든든히 세우사 거룩케 하심을 입은 모든 자 가운데 기업이 있게 하시리라."},
+  {id:"v08",series:"walk",title:"하나님의 성령에 의한 생활",ref:"로마서 8:14",text:"무릇 하나님의 영으로 인도함을 받는 그들은 곧 하나님의 아들이라."},
+  {id:"v09",series:"walk",title:"믿음에 의한 생활",ref:"고린도후서 5:7",text:"이는 우리가 믿음으로 행하고 보는 것으로 하지 아니함이로라."},
+  {id:"v10",series:"walk",title:"사랑에 의한 생활",ref:"요한일서 4:11",text:"사랑하는 자들아 하나님이 이같이 우리를 사랑하셨은즉 우리도 서로 사랑하는 것이 마땅하도다."},
+  {id:"v11",series:"walk",title:"그리스도인의 교제하는 생활",ref:"요한일서 1:7",text:"저가 빛 가운데 계신 것 같이 우리도 빛 가운데 행하면 우리가 서로 사귐이 있고 그 아들 예수의 피가 우리를 모든 죄에서 깨끗하게 하실 것이요."},
+  {id:"v12",series:"walk",title:"증인으로서의 생활",ref:"베드로전서 3:15",text:"너희 마음에 그리스도를 주로 삼아 거룩하게 하고, 너희 속에 있는 소망에 관한 이유를 묻는 자에게는 대답할 것을 항상 예비하되 온유와 두려움으로 하고."},
+  {id:"v13",series:"walk",title:"후히 드리는 생활",ref:"고린도후서 9:7",text:"각각 그 마음에 정한 대로 할 것이요, 인색함으로나 억지로 하지 말지니 하나님은 즐겨 내는 자를 사랑하시느니라."},
+  // ── 60구절: A파트 ──
+  {id:"v14",series:"A",title:"중심되신 그리스도",ref:"고린도후서 5:17",text:"그런즉 누구든지 그리스도 안에 있으면 새로운 피조물이라. 이전 것은 지나갔으니, 보라 새것이 되었도다."},
+  {id:"v15",series:"A",title:"중심되신 그리스도",ref:"갈라디아서 2:20",text:"내가 그리스도와 함께 십자가에 못박혔나니, 그런즉 이제는 내가 산 것이 아니요 오직 내 안에 그리스도께서 사신 것이라. 이제 내가 육체 가운데 사는 것은 나를 사랑하사 나를 위하여 자기 몸을 버리신 하나님의 아들을 믿는 믿음 안에서 사는 것이라."},
+  {id:"v16",series:"A",title:"그리스도께 순종",ref:"로마서 12:1",text:"그러므로 형제들아 내가 하나님의 모든 자비하심으로 너희를 권하노니 너희 몸을 하나님이 기뻐하시는 거룩한 산 제사로 드리라 이는 너희의 드릴 영적 예배니라."},
+  {id:"v17",series:"A",title:"그리스도께 순종",ref:"요한복음 14:21",text:"나의 계명을 지키는 자라야 나를 사랑하는 자니 나를 사랑하는 자는 내 아버지께 사랑을 받을 것이요 나도 그를 사랑하여 그에게 나를 나타내리라."},
+  {id:"v18",series:"A",title:"말씀",ref:"디모데후서 3:16",text:"모든 성경은 하나님의 감동으로 된 것으로 교훈과 책망과 바르게 함과 의로 교육하기에 유익하니"},
+  {id:"v19",series:"A",title:"말씀",ref:"여호수아 1:8",text:"이 율법책을 네 입에서 떠나지 말게 하며 주야로 그것을 묵상하여 그 가운데 기록한 대로 다 지켜 행하라 그리하면 네 길이 평탄하게 될 것이라. 네가 형통하리라."},
+  {id:"v20",series:"A",title:"기도",ref:"요한복음 15:7",text:"너희가 내 안에 거하고 내 말이 너희 안에 거하면 무엇이든지 원하는 대로 구하라. 그리하면 이루리라."},
+  {id:"v21",series:"A",title:"기도",ref:"빌립보서 4:6,7",text:"아무것도 염려하지 말고 오직 모든 일에 기도와 간구로 너희 구할 것을 감사함으로 하나님께 아뢰라. 그리하면 모든 지각에 뛰어난 하나님의 평강이 그리스도 예수 안에서 너희 마음과 생각을 지키시리라."},
+  {id:"v22",series:"A",title:"교제",ref:"마태복음 18:20",text:"두세 사람이 내 이름으로 모인 곳에는 나도 그들 중에 있느니라."},
+  {id:"v23",series:"A",title:"교제",ref:"히브리서 10:24,25",text:"서로 돌아보아 사랑과 선행을 격려하며, 모이기를 폐하는 어떤 사람들의 습관과 같이 하지말고, 오직 권하여 그날이 가까움을 볼수록 더욱 그리하자."},
+  {id:"v24",series:"A",title:"증거",ref:"마태복음 4:19",text:"말씀하시되, 나를 따라오너라 내가 너희로 사람을 낚는 어부가 되게 하리라 하시니."},
+  {id:"v25",series:"A",title:"증거",ref:"로마서 1:16",text:"내가 복음을 부끄러워하지 아니하노니, 이 복음은 모든 믿는 자에게 구원을 주시는 하나님의 능력이 됨이라. 첫째는 유대인에게요 또한 헬라인에게로다."},
+  // ── 60구절: B파트 ──
+  {id:"v26",series:"B",title:"모든 사람이 죄를 범함",ref:"로마서 3:23",text:"모든 사람이 죄를 범하였으매 하나님의 영광에 이르지 못하더니."},
+  {id:"v27",series:"B",title:"모든 사람이 죄를 범함",ref:"이사야 53:6",text:"우리는 다 양 같아서 그릇 행하여 각기 제 길로 갔거늘, 여호와께서는 우리 무리의 죄악을 그에게 담당시키셨도다."},
+  {id:"v28",series:"B",title:"죄의 형벌",ref:"로마서 6:23",text:"죄의 삯은 사망이요, 하나님의 은사는 그리스도 예수 우리 주 안에 있는 영생이니라."},
+  {id:"v29",series:"B",title:"죄의 형벌",ref:"히브리서 9:27",text:"한 번 죽는 것은 사람에게 정하신 것이요, 그 후에는 심판이 있으리니."},
+  {id:"v30",series:"B",title:"그리스도가 형벌을 받음",ref:"로마서 5:8",text:"우리가 아직 죄인 되었을 때에 그리스도께서 우리를 위하여 죽으심으로 하나님께서 우리에게 대한 자기의 사랑을 확증하셨느니라."},
+  {id:"v31",series:"B",title:"그리스도가 형벌을 받음",ref:"베드로전서 3:18",text:"그리스도께서도 한 번 죄를 위하여 죽으사 의인으로서 불의한 자를 대신하셨으니, 이는 우리를 하나님 앞으로 인도하려 하심이라. 육체로는 죽임을 당하시고 영으로는 살리심을 받으셨으니."},
+  {id:"v32",series:"B",title:"선행으로 구원받지 못함",ref:"에베소서 2:8,9",text:"너희가 그 은혜를 인하여 믿음으로 말미암아 구원을 얻었나니, 이것이 너희에게서 난 것이 아니요 하나님의 선물이라. 행위에서 난 것이 아니니, 이는 누구든지 자랑치 못하게 함이니라."},
+  {id:"v33",series:"B",title:"선행으로 구원받지 못함",ref:"디도서 3:5",text:"우리를 구원하시되 우리의 행한바 의로운 행위로 말미암지 아니하고, 오직 그의 긍휼하심을 좇아 중생의 씻음과 성령의 새롭게 하심으로 하셨나니."},
+  {id:"v34",series:"B",title:"그리스도를 모셔야 함",ref:"요한복음 1:12",text:"영접하는 자 곧 그 이름을 믿는 자들에게는 하나님의 자녀가 되는 권세를 주셨으니."},
+  {id:"v35",series:"B",title:"그리스도를 모셔야 함",ref:"요한계시록 3:20",text:"볼지어다. 내가 문밖에 서서 두드리노니, 누구든지 내 음성을 듣고 문을 열면 내가 그에게로 들어가 그로 더불어 먹고 그는 나로 더불어 먹으리라."},
+  {id:"v36",series:"B",title:"구원의 확신",ref:"요한일서 5:13",text:"내가 하나님의 아들의 이름을 믿는 너희에게 이것을 쓴 것은, 너희로 하여금 너희에게 영생이 있음을 알게 하려 함이라."},
+  {id:"v37",series:"B",title:"구원의 확신",ref:"요한복음 5:24",text:"내가 진실로 진실로 너희에게 이르노니, 내 말을 듣고 또 나 보내신 이를 믿는 자는 영생을 얻었고 심판에 이르지 아니하나니 사망에서 생명으로 옮겼느니라."},
+  // ── 60구절: C파트 ──
+  {id:"v38",series:"C",title:"성령",ref:"고린도전서 3:16",text:"너희가 하나님의 성전인 것과 하나님의 성령이 너희 안에 거하시는 것을 알지 못하느뇨."},
+  {id:"v39",series:"C",title:"성령",ref:"고린도전서 2:12",text:"우리가 세상의 영을 받지 아니하고 오직 하나님께로 온 영을 받았으니, 이는 우리로 하여금 하나님께서 우리에게 은혜로 주신 것들을 알게 하려 하심이라."},
+  {id:"v40",series:"C",title:"능력",ref:"이사야 41:10",text:"두려워 말라. 내가 너와 함께 함이니라. 놀라지 말라. 나는 네 하나님이 됨이니라. 내가 너를 굳세게 하리라. 참으로 너를 도와주리라. 참으로 나의 의로운 오른손으로 너를 붙들리라."},
+  {id:"v41",series:"C",title:"능력",ref:"빌립보서 4:13",text:"내게 능력 주시는 자 안에서 내가 모든 것을 할 수 있느니라."},
+  {id:"v42",series:"C",title:"성실",ref:"예레미야애가 3:22,23",text:"여호와의 자비와 긍휼이 무궁하시므로 우리가 진멸되지 아니함이니이다. 이것이 아침마다 새로우니 주의 성실이 크도소이다."},
+  {id:"v43",series:"C",title:"성실",ref:"민수기 23:19",text:"하나님은 인생이 아니시니 식언치 않으시고 인자가 아니시니 후회가 없으시도다. 어찌 그 말씀하신 바를 행치 않으시며 하신 말씀을 실행치 않으시랴."},
+  {id:"v44",series:"C",title:"평안",ref:"이사야 26:3",text:"주께서 심지가 견고한 자를 평강에 평강으로 지키시리니, 이는 그가 주를 의뢰함이니이다."},
+  {id:"v45",series:"C",title:"평안",ref:"베드로전서 5:7",text:"너희 염려를 다 주께 맡겨 버리라. 이는 저가 너희를 권고하심이니라."},
+  {id:"v46",series:"C",title:"공급",ref:"로마서 8:32",text:"자기 아들을 아끼지 아니하시고 우리 모든 사람을 위하여 내어주신 이가 어찌 그 아들과 함께 모든 것을 우리에게 은사로 주지 아니하시겠느뇨."},
+  {id:"v47",series:"C",title:"공급",ref:"빌립보서 4:19",text:"나의 하나님이 그리스도 예수 안에서 영광 가운데 그 풍성한 대로 너희 모든 쓸 것을 채우시리라."},
+  {id:"v48",series:"C",title:"유혹에서 도우심",ref:"히브리서 2:18",text:"자기가 시험을 받아 고난을 당하셨은즉 시험받는 자들을 능히 도우시느니라."},
+  {id:"v49",series:"C",title:"유혹에서 도우심",ref:"시편 119:9,11",text:"청년이 무엇으로 그 행실을 깨끗케 하리이까. 주의 말씀을 따라 삼갈 것이니이다. 내가 주께 범죄치 아니하려 하여 주의 말씀을 내 마음에 두었나이다."},
+  // ── 60구절: D파트 ──
+  {id:"v50",series:"D",title:"그리스도를 첫자리에 모심",ref:"마태복음 6:33",text:"너희는 먼저 그의 나라와 그의 의를 구하라. 그리하면 이 모든 것을 너희에게 더하시리라."},
+  {id:"v51",series:"D",title:"그리스도를 첫자리에 모심",ref:"누가복음 9:23",text:"또 무리에게 이르시되, 아무든지 나를 따라 오려거든 자기를 부인하고 날마다 제 십자가를 지고 나를 좇을 것이니라."},
+  {id:"v52",series:"D",title:"죄에서 떠남",ref:"요한일서 2:15,16",text:"이 세상이나 세상에 있는 것들을 사랑치 말라. 누구든지 세상을 사랑하면 아버지의 사랑이 그 속에 있지 아니하니, 이는 세상에 있는 모든 것이 육신의 정욕과 안목의 정욕과 이생의 자랑이니, 다 아버지께로 좇아 온 것이 아니요, 세상으로 좇아 온 것이라."},
+  {id:"v53",series:"D",title:"죄에서 떠남",ref:"로마서 12:2",text:"너희는 이 세대를 본받지 말고 오직 마음을 새롭게 함으로 변화를 받아 하나님의 선하시고 기뻐하시고 온전하신 뜻이 무엇인지 분별하도록 하라."},
+  {id:"v54",series:"D",title:"견고함",ref:"고린도전서 15:58",text:"그러므로 내 사랑하는 형제들아, 견고하며 흔들리지 말며 항상 주의 일에 더욱 힘쓰는 자들이 되라. 이는 너희 수고가 주 안에서 헛되지 않은 줄을 앎이니라."},
+  {id:"v55",series:"D",title:"견고함",ref:"히브리서 12:3",text:"너희가 피곤하여 낙심치 않기 위하여 죄인들의 이같이 자기에게 거역한 일을 참으신 자를 생각하라."},
+  {id:"v56",series:"D",title:"다른 사람을 섬김",ref:"마가복음 10:45",text:"인자의 온 것은 섬김을 받으려 함이 아니라 도리어 섬기려 하고 자기 목숨을 많은 사람의 대속물로 주려 함이니라."},
+  {id:"v57",series:"D",title:"다른 사람을 섬김",ref:"고린도후서 4:5",text:"우리가 우리를 전파하는 것이 아니라 오직 그리스도 예수의 주 되신 것과 또 예수를 위하여 우리가 너희의 종 된 것을 전파함이라."},
+  {id:"v58",series:"D",title:"후히 드릴 것",ref:"잠언 3:9,10",text:"네 재물과 네 소산물의 처음 익은 열매로 여호와를 공경하라. 그리하면 네 창고가 가득히 차고 네 즙틀에 새 포도즙이 넘치리라."},
+  {id:"v59",series:"D",title:"후히 드릴 것",ref:"고린도후서 9:6,7",text:"이것이 곧 적게 심는 자는 적게 거두고 많이 심는 자는 많이 거둔다 하는 말이로다. 각각 그 마음에 정한 대로 할 것이요 인색함으로나 억지로 하지 말지니 하나님은 즐겨 내는 자를 사랑하시느니라."},
+  {id:"v60",series:"D",title:"세계 비전",ref:"사도행전 1:8",text:"오직 성령이 너희에게 임하시면 너희가 권능을 받고 예루살렘과 온 유대와 사마리아와 땅끝까지 이르러 내 증인이 되리라 하시니라."},
+  {id:"v61",series:"D",title:"세계 비전",ref:"마태복음 28:19,20",text:"그러므로 너희는 가서 모든 족속으로 제자를 삼아 아버지와 아들과 성령의 이름으로 세례를 주고, 내가 너희에게 분부한 모든 것을 가르쳐 지키게 하라. 볼지어다. 내가 세상 끝날까지 너희와 항상 함께 있으리라 하시니라."},
+  // ── 60구절: E파트 ──
+  {id:"v62",series:"E",title:"사랑",ref:"요한복음 13:34,35",text:"새 계명을 너희에게 주노니 서로 사랑하라. 내가 너희를 사랑한 것 같이 너희도 서로 사랑하라. 너희가 서로 사랑하면 이로써 모든 사람이 너희가 내 제자인 줄 알리라."},
+  {id:"v63",series:"E",title:"사랑",ref:"요한일서 3:18",text:"자녀들아, 우리가 말과 혀로만 사랑하지 말고 오직 행함과 진실함으로 하자."},
+  {id:"v64",series:"E",title:"겸손",ref:"빌립보서 2:3,4",text:"아무 일에든지 다툼이나 허영으로 하지 말고 오직 겸손한 마음으로 각각 자기보다 남을 낫게 여기고, 각각 자기 일을 돌아볼 뿐더러 또한 각각 다른 사람들의 일을 돌아보아 나의 기쁨을 충만케 하라."},
+  {id:"v65",series:"E",title:"겸손",ref:"베드로전서 5:5,6",text:"젊은 자들아, 이와 같이 장로들에게 순복하고 다 서로 겸손으로 허리를 동이라. 하나님이 교만한 자를 대적하시되 겸손한 자들에게는 은혜를 주시느니라. 그러므로 하나님의 능하신 손 아래서 겸손하라. 때가 되면 너희를 높이시리라."},
+  {id:"v66",series:"E",title:"순결",ref:"에베소서 5:3",text:"음행과 온갖 더러운 것과 탐욕은 너희 중에서 그 이름이라도 부르지 말라. 이는 성도의 마땅한 바니라."},
+  {id:"v67",series:"E",title:"순결",ref:"베드로전서 2:11",text:"사랑하는 자들아, 나그네와 행인 같은 너희를 권하노니 영혼을 거스려 싸우는 육체의 정욕을 제어하라."},
+  {id:"v68",series:"E",title:"정직",ref:"레위기 19:11",text:"너희는 도적질하지 말며, 속이지 말며, 서로 거짓말하지 말며."},
+  {id:"v69",series:"E",title:"정직",ref:"사도행전 24:16",text:"이것을 인하여 나도 하나님과 사람을 대하여 항상 양심에 거리낌이 없기를 힘쓰노라."},
+  {id:"v70",series:"E",title:"믿음",ref:"히브리서 11:6",text:"믿음이 없이는 기쁘시게 못하나니, 하나님께 나아가는 자는 반드시 그가 계신 것과 또한 그가 자기를 찾는 자들에게 상 주시는 이심을 믿어야 할지니라."},
+  {id:"v71",series:"E",title:"믿음",ref:"로마서 4:20,21",text:"믿음이 없어 하나님의 약속을 의심치 않고, 믿음에 견고하여져서 하나님께 영광을 돌리며, 약속하신 그것을 또한 능히 이루실 줄을 확신하였으니."},
+  {id:"v72",series:"E",title:"선행",ref:"갈라디아서 6:9,10",text:"우리가 선을 행하되 낙심하지 말지니 피곤하지 아니하면 때가 이르매 거두리라. 그러므로 우리는 기회 있는 대로 모든 이에게 착한 일을 하되 더욱 믿음의 가정들에게 할지니라."},
+  {id:"v73",series:"E",title:"선행",ref:"마태복음 5:16",text:"이같이 너희 빛을 사람 앞에 비취게 하여 저희로 너희 착한 행실을 보고 하늘에 계신 너희 아버지께 영광을 돌리게 하라."},
+  // ══ 180구절: 1. 하나님을 알아감 - 예수그리스도 ══
+  {id:"v74",series:"H_JC1",title:"예수님의 신성",ref:"요한복음 1:1,14",text:"태초에 말씀이 계시니라. 이 말씀이 하나님과 함께 계셨으니 이 말씀은 곧 하나님이시니라. 말씀이 육신이 되어 우리 가운데 거하시매 우리가 그 영광을 보니 아버지의 독생자의 영광이요 은혜와 진리가 충만하더라."},
+  {id:"v75",series:"H_JC1",title:"예수님의 신성",ref:"히브리서 1:8",text:"아들에 관하여는 하나님여 주의 보좌가 영영하며 주의 나라의 홀은 공평한 홀이니이다."},
+  {id:"v76",series:"H_JC1",title:"예수님의 인성",ref:"히브리서 4:15",text:"우리에게 있는 대제사장은 우리 연약함을 체휼하지 아니하는 자가 아니요 모든 일에 우리와 한결같이 시험을 받은 자로되 죄는 없으시니라."},
+  {id:"v77",series:"H_JC1",title:"예수님의 인성",ref:"누가복음 2:52",text:"예수는 그 지혜와 그 키가 자라가며 하나님과 사람에게 더 사랑스러워 가시더라."},
+  {id:"v78",series:"H_JC1",title:"예수님의 부활",ref:"고린도전서 15:3,4",text:"내가 받은 것을 먼저 너희에게 전하였노니, 이는 성경대로 그리스도께서 우리 죄를 위하여 죽으시고 장사지낸바 되었다가 성경대로 사흘만에 다시 살아나사"},
+  {id:"v79",series:"H_JC1",title:"예수님의 부활",ref:"고린도전서 15:20",text:"그러나 이제 그리스도께서 죽은 자 가운데서 다시 살아 잠자는 자들의 첫 열매가 되셨도다."},
+  {id:"v80",series:"H_JC1",title:"예수님은 하나님을 나타내심",ref:"요한복음 1:18",text:"본래 하나님을 본 사람이 없으되 아버지 품속에 있는 독생하신 하나님이 나타내셨느니라."},
+  {id:"v81",series:"H_JC1",title:"예수님은 하나님을 나타내심",ref:"히브리서 1:3",text:"이는 하나님의 영광의 광채시요 그 본체의 형상이시라. 그의 능력의 말씀으로 만물을 붙드시며 죄를 정결케 하는 일을 하시고 높은 곳에 계신 위엄의 우편에 앉으셨느니라."},
+  {id:"v82",series:"H_JC1",title:"구속자이신 예수님",ref:"누가복음 19:10",text:"인자의 온 것은 잃어버린 자를 찾아 구원하려 함이니라."},
+  {id:"v83",series:"H_JC1",title:"구속자이신 예수님",ref:"베드로전서 1:18,19",text:"너희가 알거니와 너희 조상의 유전한 망령된 행실에서 구속된 것은 은이나 금같이 없어질 것으로 한 것이 아니요 오직 흠 없고 점 없는 어린 양 같은 그리스도의 보배로운 피로 한 것이니라."},
+  {id:"v84",series:"H_JC1",title:"예수님의 재림",ref:"데살로니가전서 4:16,17",text:"주께서 호령과 천사장의 소리와 하나님의 나팔로 친히 하늘로 좇아 강림하시리니 그리스도 안에서 죽은 자들이 먼저 일어나고 그 후에 우리 살아남은 자도 저희와 함께 구름 속으로 끌어 올려 공중에서 주를 영접하게 하시리니 그리하여 우리가 항상 주와 함께 있으리라."},
+  {id:"v85",series:"H_JC1",title:"예수님의 재림",ref:"요한일서 3:2,3",text:"사랑하는 자들아, 우리가 지금은 하나님의 자녀라. 장래에 어떻게 될 것은 아직 나타나지 아니하였으나 그가 나타내심이 되면 우리가 그와 같을 줄을 아는 것은 그의 계신 그대로 볼 것을 인함이니, 주를 향하여 이 소망을 가진 자마다 그의 깨끗하심과 같이 자기를 깨끗하게 하느니라."},
+  // ── 180구절: 성령 ──
+  {id:"v86",series:"H_HS1",title:"증거하시는 성령",ref:"요한복음 16:13,14",text:"그러하나 진리의 성령이 오시면 그가 너희를 모든 진리 가운데로 인도하시리니 그가 자의로 말하지 않고 오직 듣는 것을 말하시며 장래 일을 너희에게 알리시리라. 그가 내 영광을 나타내리니 내 것을 가지고 너희에게 알리겠음이니라."},
+  {id:"v87",series:"H_HS1",title:"증거하시는 성령",ref:"고린도전서 12:3",text:"그러므로 내가 너희에게 알게 하노니 하나님의 영으로 말하는 자는 누구든지 예수를 저주할 자라 하지 않고 또 성령으로 아니하고는 누구든지 예수를 주시라 할 수 없느니라."},
+  {id:"v88",series:"H_HS1",title:"내주하시는 성령",ref:"로마서 8:9",text:"만일 너희 속에 하나님의 영이 거하시면 너희가 육신에 있지 아니하고 영에 있나니, 누구든지 그리스도의 영이 없으면 그리스도의 사람이 아니라."},
+  {id:"v89",series:"H_HS1",title:"내주하시는 성령",ref:"갈라디아서 4:6",text:"너희가 아들인 고로 하나님이 그 아들의 영을 우리 마음 가운데 보내사 아바 아버지라 부르게 하셨느니라."},
+  {id:"v90",series:"H_HS1",title:"통치하시는 성령",ref:"에베소서 5:18",text:"술 취하지 말라. 이는 방탕한 것이니 오직 성령의 충만을 받으라."},
+  {id:"v91",series:"H_HS1",title:"통치하시는 성령",ref:"갈라디아서 5:16",text:"내가 이르노니 너희는 성령을 좇아 행하라. 그리하면 육체의 욕심을 이루지 아니하리라."},
+  {id:"v92",series:"H_HS1",title:"계시하시는 성령",ref:"고린도전서 2:9,10",text:"기록된 바 하나님이 자기를 사랑하는 자들을 위하여 예비하신 모든 것은 눈으로 보지 못하고 귀로도 듣지 못하고 사람의 마음으로도 생각지 못하였다 함과 같으니라. 오직 하나님이 성령으로 이것을 우리에게 보이셨으니 성령은 모든 것 곧 하나님의 깊은 것이라도 통달하시느니라."},
+  {id:"v93",series:"H_HS1",title:"계시하시는 성령",ref:"요한복음 14:26",text:"보혜사 곧 아버지께서 내 이름으로 보내실 성령, 그가 너희에게 모든 것을 가르치시고 내가 너희에게 말한 모든 것을 생각나게 하시리라."},
+  {id:"v94",series:"H_HS1",title:"능력을 주시는 성령",ref:"고린도전서 2:4,5",text:"내 말과 내 전도함이 지혜의 권하는 말로 하지 아니하고 다만 성령의 나타남과 능력으로 하여 너희 믿음이 사람의 지혜에 있지 아니하고 다만 하나님의 능력에 있게 하려 하였노라."},
+  {id:"v95",series:"H_HS1",title:"능력을 주시는 성령",ref:"데살로니가전서 1:5",text:"이는 우리 복음이 말로만 너희에게 이른 것이 아니라 오직 능력과 성령과 큰 확신으로 된 것이니 우리가 너희 가운데서 너희를 위하여 어떠한 사람이 된 것은 너희 아는 바와 같으니라."},
+  {id:"v96",series:"H_HS1",title:"은사를 주시는 성령",ref:"고린도전서 12:11",text:"이 모든 일은 같은 한 성령이 행하사 그 뜻대로 각 사람에게 나눠 주시느니라."},
+  {id:"v97",series:"H_HS1",title:"은사를 주시는 성령",ref:"고린도전서 12:4,5,6",text:"은사는 여러 가지나 성령은 같고 직임은 여러 가지나 주는 같으며 또 역사는 여러 가지나 모든 것을 모든 사람 가운데서 역사하시는 하나님은 같으니."},
+  // ── 180구절: 하나님 ──
+  {id:"v98",series:"H_G1",title:"하나님의 능력",ref:"예레미야 32:17",text:"슬프도소이다. 주 여호와여, 주께서 큰 능과 드신 팔로 천지를 지으셨사오니 주에게는 능치 못한 일이 없으시니이다."},
+  {id:"v99",series:"H_G1",title:"하나님의 지혜",ref:"로마서 11:33",text:"깊도다 하나님의 지혜와 지식의 부요함이여, 그의 판단은 측량치 못할 것이며 그의 길은 찾지 못할 것이로다."},
+  {id:"v100",series:"H_G1",title:"하나님의 임재",ref:"예레미야 23:24",text:"나 여호와가 말하노라. 사람이 내게 보이지 아니하려고 누가 자기를 은밀한 곳에 숨길 수 있겠느냐. 나 여호와가 말하노라. 나는 천지에 충만하지 아니하냐."},
+  {id:"v101",series:"H_G1",title:"하나님의 은혜",ref:"고린도후서 9:8",text:"하나님이 능히 모든 은혜를 너희에게 넘치게 하시나니, 이는 너희로 모든 일에 항상 모든 것이 넉넉하여 모든 착한 일을 넘치게 하게 하려 하심이라."},
+  {id:"v102",series:"H_G1",title:"하나님의 영광",ref:"역대상 29:11,12,13",text:"여호와여, 광대하심과 권능과 영광과 이김과 위엄이 다 주께 속하였사오니 천지에 있는 것이 다 주의 것이로소이다. 여호와여, 주권도 주께 속하였사오니 주는 높으사 만유의 머리심이니이다. 부와 귀가 주께로 말미암고 또 주는 만유의 주재가 되사 손에 권세와 능력이 있사오니 모든 자를 크게 하심과 강하게 하심이 주의 손에 있나이다. 우리 하나님이여, 이제 우리가 주께 감사하오며 주의 영화로운 이름을 찬양하나이다."},
+  {id:"v103",series:"H_G1",title:"하나님의 성실",ref:"데살로니가후서 3:3",text:"주는 미쁘사 너희를 굳게 하시고 악한 자에게서 지키시리라."},
+  {id:"v104",series:"H_G1",title:"하나님은 영이심",ref:"요한복음 4:24",text:"하나님은 영이시니 예배하는 자가 신령과 진정으로 예배할지니라."},
+  {id:"v105",series:"H_G1",title:"하나님의 거룩하심",ref:"베드로전서 1:15,16",text:"오직 너희를 부르신 거룩한 자처럼 너희도 모든 행실에 거룩한 자가 되라. 기록하였으되 내가 거룩하니 너희도 거룩할지어다 하셨느니라."},
+  {id:"v106",series:"H_G1",title:"하나님의 광대하심",ref:"시편 145:3",text:"여호와는 광대하시니 크게 찬양할 것이라. 그의 광대하심을 측량치 못하리로다."},
+  {id:"v107",series:"H_G1",title:"하나님의 사랑",ref:"요한일서 4:10",text:"사랑은 여기 있으니 우리가 하나님을 사랑한 것이 아니요 오직 하나님이 우리를 사랑하사 우리 죄를 위하여 화목제로 그 아들을 보내셨음이니라."},
+  {id:"v108",series:"H_G1",title:"하나님의 긍휼",ref:"시편 86:15",text:"그러나 주여, 주는 긍휼히 여기시며 은혜를 베푸시며 노하기를 더디 하시며 인자와 진실이 풍성하신 하나님이시오니."},
+  {id:"v109",series:"H_G1",title:"하나님의 절대 주권",ref:"로마서 8:28",text:"우리가 알거니와 하나님을 사랑하는 자 곧 그 뜻대로 부르심을 입은 자들에게는 모든 것이 합력하여 선을 이루느니라."},
+  // ── 180구절: 2. 사랑 안에서 자라감 - 사랑으로 말함 ──
+  {id:"v110",series:"L_SP1",title:"진실을 말함",ref:"에베소서 4:15",text:"오직 사랑 안에서 참된 것을 하여 범사에 그에게까지 자랄지라. 그는 머리니 곧 그리스도라."},
+  {id:"v111",series:"L_SP1",title:"진실을 말함",ref:"골로새서 3:9",text:"너희가 서로 거짓말을 말라. 옛 사람과 그 행위를 벗어 버리고."},
+  {id:"v112",series:"L_SP1",title:"험담을 피함",ref:"잠언 17:9",text:"허물을 덮어 주는 자는 사랑을 구하는 자요 그것을 거듭 말하는 자는 친한 벗을 이간하는 자니라."},
+  {id:"v113",series:"L_SP1",title:"험담을 피함",ref:"잠언 11:13",text:"두루 다니며 한담하는 자는 남의 비밀을 누설하나 마음이 신실한 자는 그런 것을 숨기느니라."},
+  {id:"v114",series:"L_SP1",title:"은혜스럽게 말함",ref:"골로새서 4:4,5,6",text:"그리하면 내가 마땅히 할 말로써 이 비밀을 나타내리라. 외인을 향하여서는 지혜로 행하여 세월을 아끼라. 너희 말을 항상 은혜 가운데서 소금으로 고루게 함같이 하라. 그리하면 각 사람에게 마땅히 대답할 것을 알리라."},
+  {id:"v115",series:"L_SP1",title:"은혜스럽게 말함",ref:"잠언 15:1",text:"유순한 대답은 분노를 쉬게 하여도 과격한 말은 노를 격동하느니라."},
+  {id:"v116",series:"L_SP1",title:"죄를 시인함",ref:"야고보서 5:16",text:"이러므로 너희 죄를 서로 고하며 병 낫기를 위하여 서로 기도하라. 의인의 간구는 역사하는 힘이 많으니라."},
+  {id:"v117",series:"L_SP1",title:"죄를 시인함",ref:"마태복음 5:23,24",text:"그러므로 예물을 제단에 드리다가 거기서 네 형제에게 원망 들을 만한 일이 있는 줄 생각나거든 예물을 제단 앞에 두고 먼저 가서 형제와 화목하고 그 후에 와서 예물을 드리라."},
+  {id:"v118",series:"L_SP1",title:"경청함",ref:"야고보서 1:19",text:"내 사랑하는 형제들아, 너희가 알거니와 사람마다 듣기는 속히 하고 말하기는 더디 하며 성내기도 더디 하라."},
+  {id:"v119",series:"L_SP1",title:"경청함",ref:"잠언 18:13",text:"사연을 듣기 전에 대답하는 자는 미련하여 욕을 당하느니라."},
+  {id:"v120",series:"L_SP1",title:"책망을 받아들임",ref:"잠언 9:8,9",text:"거만한 자를 책망하지 말라. 그가 너를 미워할까 두려우니라. 지혜 있는 자를 책망하라. 그가 너를 사랑하리라. 지혜 있는 자에게 교훈을 더하라. 그가 더욱 지혜로와질 것이요. 의로운 사람을 가르치라. 그의 학식이 더하리라."},
+  {id:"v121",series:"L_SP1",title:"책망을 받아들임",ref:"마태복음 18:15",text:"네 형제가 죄를 범하거든 가서 너와 그 사람과만 상대하여 권고하라. 만일 들으면 네가 네 형제를 얻은 것이요."},
+  // ── 180구절: 사랑으로 대함 ──
+  {id:"v122",series:"L_TR1",title:"다른 사람을 용서함",ref:"에베소서 4:32",text:"서로 인자하게 하며 불쌍히 여기며 서로 용서하기를 하나님이 그리스도 안에서 너희를 용서하심과 같이 하라."},
+  {id:"v123",series:"L_TR1",title:"다른 사람을 용서함",ref:"골로새서 3:13",text:"누가 뉘게 혐의가 있거든 서로 용납하여 피차 용서하되 주께서 너희를 용서하신 것과 같이 너희도 그리하고."},
+  {id:"v124",series:"L_TR1",title:"오래 참음",ref:"에베소서 4:2",text:"모든 겸손과 온유로 하고 오래 참음으로 사랑 가운데서 서로 용납하고."},
+  {id:"v125",series:"L_TR1",title:"오래 참음",ref:"디모데후서 2:24,25",text:"마땅히 주의 종은 다투지 아니하고 모든 사람을 대하여 온유하며 가르치기를 잘하며 참으며 거역하는 자를 온유함으로 징계할지니 혹 하나님이 저희에게 회개함을 주사 진리를 알게 하실까 하며."},
+  {id:"v126",series:"L_TR1",title:"분노를 다스림",ref:"에베소서 4:26",text:"분을 내어도 죄를 짓지 말며 해가 지도록 분을 품지 말고."},
+  {id:"v127",series:"L_TR1",title:"분노를 다스림",ref:"골로새서 3:8",text:"이제는 너희가 이 모든 것을 벗어 버리라. 곧 분과 악의와 훼방과 너희 입의 부끄러운 말이라."},
+  {id:"v128",series:"L_TR1",title:"악의를 버림",ref:"히브리서 12:15",text:"너희는 돌아보아 하나님 은혜에 이르지 못하는 자가 있는가 두려워하고 또 쓴 뿌리가 나서 괴롭게 하고 많은 사람이 이로 말미암아 더러움을 입을까 두려워하고."},
+  {id:"v129",series:"L_TR1",title:"악의를 버림",ref:"에베소서 4:31",text:"너희는 모든 악독과 노함과 분냄과 떠드는 것과 훼방하는 것을 모든 악의와 함께 버리고."},
+  {id:"v130",series:"L_TR1",title:"억울한 일을 참음",ref:"베드로전서 2:20,21",text:"죄가 있어 매를 맞고 참으면 무슨 칭찬이 있으리요. 오직 선을 행함으로 고난을 받고 참으면 이는 하나님 앞에 아름다우니라. 이를 위하여 너희가 부르심을 입었으니 그리스도도 너희를 위하여 고난을 받으사 너희에게 본을 끼쳐 그 자취를 따라 오게 하려 하셨느니라."},
+  {id:"v131",series:"L_TR1",title:"억울한 일을 참음",ref:"로마서 12:19",text:"내 사랑하는 자들아, 너희가 친히 원수를 갚지 말고 진노하심에 맡기라. 기록되었으되, 원수 갚는 것이 내게 있으니 내가 갚으리라고 주께서 말씀하시니라."},
+  {id:"v132",series:"L_TR1",title:"시기심을 버림",ref:"잠언 27:4",text:"분은 잔인하고 노는 창수 같거니와 투기 앞에야 누가 서리요."},
+  {id:"v133",series:"L_TR1",title:"시기심을 버림",ref:"야고보서 3:16",text:"시기와 다툼이 있는 곳에는 요란과 모든 악한 일이 있음이니라."},
+  // ── 180구절: 사랑으로 행함 ──
+  {id:"v134",series:"L_AC1",title:"화목한 생활",ref:"로마서 15:5,6",text:"이제 인내와 안위의 하나님이 너희로 그리스도 예수를 본받아 서로 뜻이 같게 하여 주사 한 마음과 한 입으로 하나님 곧 우리 주 예수 그리스도의 아버지께 영광을 돌리게 하려 하노라."},
+  {id:"v135",series:"L_AC1",title:"화목한 생활",ref:"고린도전서 1:10",text:"형제들아, 내가 우리 주 예수 그리스도의 이름으로 너희를 권하노니 다 같은 말을 하고 너희 가운데 분쟁이 없이 같은 마음과 같은 뜻으로 온전히 합하라."},
+  {id:"v136",series:"L_AC1",title:"다른 사람을 섬김",ref:"마태복음 20:26,27",text:"너희 중에는 그렇지 아니하니 너희 중에 누구든지 크고자 하는 자는 너희를 섬기는 자가 되고, 너희 중에 누구든지 으뜸이 되고자 하는 자는 너희 종이 되어야 하리라."},
+  {id:"v137",series:"L_AC1",title:"다른 사람을 섬김",ref:"갈라디아서 5:13",text:"형제들아, 너희가 자유를 위하여 부르심을 입었으나, 그러나 그 자유로 육체의 기회를 삼지 말고 오직 사랑으로 서로 종 노릇 하라."},
+  {id:"v138",series:"L_AC1",title:"남을 먼저 생각함",ref:"로마서 15:2",text:"우리 각 사람이 이웃을 기쁘게 하되 선을 이루고 덕을 세우도록 할지니라."},
+  {id:"v139",series:"L_AC1",title:"남을 먼저 생각함",ref:"빌립보서 2:3,4",text:"아무 일에든지 다툼이나 허영으로 하지 말고 오직 겸손한 마음으로 각각 자기보다 남을 낫게 여기고 각각 자기 일을 돌아볼 뿐더러 또한 각각 다른 사람들의 일을 돌아보아 나의 기쁨을 충만케 하라."},
+  {id:"v140",series:"L_AC1",title:"서로 격려함",ref:"데살로니가전서 5:11",text:"그러므로 피차 권면하고 피차 덕을 세우기를 너희가 하는 것같이 하라."},
+  {id:"v141",series:"L_AC1",title:"서로 격려함",ref:"전도서 4:9,10",text:"두 사람이 한 사람보다 나음은 저희가 수고함으로 좋은 상을 얻을 것임이라. 혹시 저희가 넘어지면 하나가 그 동무를 붙들어 일으키려니와 홀로 있어 넘어지고 붙들어 일으킬 자가 없는 자에게는 화가 있으리라."},
+  {id:"v142",series:"L_AC1",title:"불쌍히 여김",ref:"마태복음 9:36",text:"무리를 보시고 민망히 여기시니 이는 저희가 목자 없는 양과 같이 고생하며 유리함이라."},
+  {id:"v143",series:"L_AC1",title:"불쌍히 여김",ref:"로마서 12:15",text:"즐거워하는 자들로 함께 즐거워하고 우는 자들로 함께 울라."},
+  {id:"v144",series:"L_AC1",title:"온유하게 대함",ref:"야고보서 3:17",text:"오직 위로부터 난 지혜는 첫째 성결하고 다음에 화평하고 관용하고 양순하며 긍휼과 선한 열매가 가득하고 편벽과 거짓이 없나니."},
+  {id:"v145",series:"L_AC1",title:"온유하게 대함",ref:"갈라디아서 6:1",text:"형제들아, 사람이 만일 무슨 범죄한 일이 드러나거든 신령한 너희는 온유한 심령으로 그러한 자를 바로잡고 네 자신을 돌아보아 너도 시험을 받을까 두려워하라."},
+  // ── 180구절: 3. 믿음 안에서 자라감 - 약속 ──
+  {id:"v146",series:"F_PR1",title:"약속의 중요성",ref:"베드로후서 1:3,4",text:"그의 신기한 능력으로 생명과 경건에 속한 모든 것을 우리에게 주셨으니, 이는 자기의 영광과 덕으로써 우리를 부르신 자를 앎으로 말미암음이라. 이로써 그 보배롭고 지극히 큰 약속을 우리에게 주사, 이 약속으로 말미암아 너희로 정욕을 인하여 세상에서 썩어질 것을 피하여 신의 성품에 참예하는 자가 되게 하려 하셨으니."},
+  {id:"v147",series:"F_PR1",title:"약속의 중요성",ref:"고린도후서 1:20",text:"하나님의 약속은 얼마든지 그리스도 안에서 예가 되니, 그런즉 그로 말미암아 우리가 아멘하여 하나님께 영광을 돌리게 되느니라."},
+  {id:"v148",series:"F_PR1",title:"선교를 위한 약속들",ref:"고린도후서 1:3,4",text:"찬송하리로다. 그는 우리 주 예수 그리스도의 하나님이시요 자비의 아버지시요 모든 위로의 하나님이시며 우리의 모든 환난 중에서 우리를 위로하사 우리로 하여금 하나님께 받는 위로로써 모든 환난 중에 있는 자들을 능히 위로하게 하시는 이시로다."},
+  {id:"v149",series:"F_PR1",title:"선교를 위한 약속들",ref:"고린도전서 3:7,8",text:"그런즉 심는 이나 물 주는 이는 아무것도 아니로되 오직 자라나게 하시는 하나님뿐이니라. 심는 이와 물 주는 이가 일반이나 각각 자기의 일하는 대로 자기의 상을 받으리라."},
+  {id:"v150",series:"F_PR1",title:"열매 맺는 삶을 위한 약속들",ref:"시편 1:2,3",text:"오직 여호와의 율법을 즐거워하여 그 율법을 주야로 묵상하는 자로다. 저는 시냇가에 심은 나무가 시절을 좇아 과실을 맺으며 그 잎사귀가 마르지 아니함 같으니 그 행사가 다 형통하리로다."},
+  {id:"v151",series:"F_PR1",title:"열매 맺는 삶을 위한 약속들",ref:"베드로후서 1:8",text:"이런 것이 너희에게 있어 흡족한즉 너희로 우리 주 예수 그리스도를 알기에 게으르지 않고 열매 없는 자가 되지 않게 하려니와."},
+  {id:"v152",series:"F_PR1",title:"고난 중 도우심을 위한 약속들",ref:"베드로전서 5:10",text:"모든 은혜의 하나님 곧 그리스도 안에서 너희를 부르사 자기의 영원한 영광에 들어가게 하신 이가 잠깐 고난을 받은 너희를 친히 온전케 하시며 굳게 하시며 강하게 하시며 터를 견고케 하시리라."},
+  {id:"v153",series:"F_PR1",title:"고난 중 도우심을 위한 약속들",ref:"고린도후서 12:9",text:"내게 이르시기를, 내 은혜가 네게 족하도다. 이는 내 능력이 약한 데서 온전하여짐이라 하신지라. 이러므로 도리어 크게 기뻐함으로 나의 여러 약한 것들에 대하여 자랑하리니, 이는 그리스도의 능력으로 내게 머물게 하려 함이라."},
+  {id:"v154",series:"F_PR1",title:"공급을 위한 약속들",ref:"에베소서 1:3",text:"찬송하리로다. 하나님 곧 우리 주 예수 그리스도의 아버지께서 그리스도 안에서 하늘에 속한 모든 신령한 복으로 우리에게 복 주시되."},
+  {id:"v155",series:"F_PR1",title:"공급을 위한 약속들",ref:"시편 37:4,5",text:"또 여호와를 기뻐하라. 저가 네 마음의 소원을 이루어 주시리로다. 너의 길을 여호와께 맡기라. 저를 의지하면 저가 이루시고."},
+  {id:"v156",series:"F_PR1",title:"용서에 대한 약속들",ref:"요한일서 2:1,2",text:"나의 자녀들아, 내가 이것을 너희에게 씀은 너희로 죄를 범치 않게 하려 함이라. 만일 누가 죄를 범하면 아버지 앞에서 우리에게 대언자가 있으니 곧 의로우신 예수 그리스도시라. 저는 우리 죄를 위한 화목제물이니 우리만 위할 뿐 아니요 온 세상의 죄를 위하심이라."},
+  {id:"v157",series:"F_PR1",title:"용서에 대한 약속들",ref:"시편 103:12",text:"동이 서에서 먼 것 같이 우리 죄과를 우리에게서 멀리 옮기셨으며."},
+  // ── 180구절: 말씀 ──
+  {id:"v158",series:"F_WD1",title:"능력",ref:"히브리서 4:12",text:"하나님의 말씀은 살았고 운동력이 있어 좌우에 날선 어떤 검보다도 예리하여 혼과 영과 및 관절과 골수를 찔러 쪼개기까지 하며 또 마음의 생각과 뜻을 감찰하나니."},
+  {id:"v159",series:"F_WD1",title:"능력",ref:"이사야 55:10,11",text:"비와 눈이 하늘에서 내려서는 다시 그리로 가지 않고 토지를 적시어서 싹이 나게 하며 열매가 맺게 하여 파종하는 자에게 종자를 주며 먹는 자에게 양식을 줌과 같이, 내 입에서 나가는 말도 헛되이 내게로 돌아오지 아니하고 나의 뜻을 이루며 나의 명하여 보낸 일에 형통하리라."},
+  {id:"v160",series:"F_WD1",title:"영감",ref:"베드로후서 1:20,21",text:"먼저 알 것은 경의 모든 예언은 사사로이 풀 것이 아니니, 예언은 언제든지 사람의 뜻으로 낸 것이 아니요 오직 성령의 감동하심을 입은 사람들이 하나님께 받아 말한 것임이니라."},
+  {id:"v161",series:"F_WD1",title:"영감",ref:"데살로니가전서 2:13",text:"이러므로 우리가 하나님께 쉬지 않고 감사함은 너희가 우리에게 들은바 하나님의 말씀을 받을 때에 사람의 말로 아니하고 하나님의 말씀으로 받음이니 진실로 그러하다. 이 말씀이 또한 너희 믿는 자 속에서 역사하느니라."},
+  {id:"v162",series:"F_WD1",title:"영양",ref:"예레미야 15:16",text:"만군의 하나님 여호와시여, 나는 주의 이름으로 일컬음을 받는 자라. 내가 주의 말씀을 얻어먹었사오니, 주의 말씀은 내게 기쁨과 내 마음의 즐거움이오나."},
+  {id:"v163",series:"F_WD1",title:"영양",ref:"욥기 23:12",text:"내가 그의 입술의 명령을 어기지 아니하고, 일정한 음식보다 그의 입의 말씀을 귀히 여겼구나."},
+  {id:"v164",series:"F_WD1",title:"알아야 함",ref:"사도행전 17:11",text:"베뢰아 사람은 데살로니가에 있는 사람보다 더 신사적이어서 간절한 마음으로 말씀을 받고 이것이 그러한가 하여 날마다 성경을 상고하므로."},
+  {id:"v165",series:"F_WD1",title:"알아야 함",ref:"요한복음 5:39,40",text:"너희가 성경에서 영생을 얻는 줄 생각하고 성경을 상고하거니와 이 성경이 곧 내게 대하여 증거하는 것이로다. 그러나 너희가 영생을 얻기 위하여 내게 오기를 원하지 아니하는도다."},
+  {id:"v166",series:"F_WD1",title:"순종해야 함",ref:"요한복음 8:31,32",text:"그러므로 예수께서 자기를 믿은 유대인들에게 이르시되, 너희가 내 말에 거하면 참 내 제자가 되고 진리를 알지니 진리가 너희를 자유케 하리라."},
+  {id:"v167",series:"F_WD1",title:"순종해야 함",ref:"마태복음 4:4",text:"예수께서 대답하여 가라사대, 기록되었으되 사람이 떡으로만 살 것이 아니요 하나님의 입으로 나오는 모든 말씀으로 살 것이라 하였느니라 하시니."},
+  {id:"v168",series:"F_WD1",title:"확실성",ref:"마태복음 24:35",text:"천지는 없어지겠으나 내 말은 없어지지 아니하리라."},
+  {id:"v169",series:"F_WD1",title:"확실성",ref:"요한복음 17:17",text:"저희를 진리로 거룩하게 하옵소서. 아버지의 말씀은 진리니이다."},
+  // ── 180구절: 믿음 ──
+  {id:"v170",series:"F_FA1",title:"믿음의 시련",ref:"베드로전서 1:6,7",text:"그러므로 너희가 이제 여러 가지 시험을 인하여 잠깐 근심하게 되지 않을 수 없었으나 오히려 크게 기뻐하도다. 너희 믿음의 시련이 불로 연단하여도 없어질 금보다 더 귀하여 예수 그리스도의 나타나실 때에 칭찬과 영광과 존귀를 얻게 하려 함이라."},
+  {id:"v171",series:"F_FA1",title:"믿음의 시련",ref:"야고보서 1:2,3,4",text:"내 형제들아, 너희가 여러 가지 시험을 만나거든 온전히 기쁘게 여기라. 이는 너희 믿음의 시련이 인내를 만들어 내는 줄 너희가 앎이라. 인내를 온전히 이루라. 이는 너희로 온전하고 구비하여 조금도 부족함이 없게 하려 함이라."},
+  {id:"v172",series:"F_FA1",title:"불신의 결과",ref:"히브리서 4:2",text:"저희와 같이 우리도 복음 전함을 받은 자이나 그러나 그 들은바 말씀이 저희에게 유익되지 못한 것은 듣는 자가 믿음을 화합지 아니함이라."},
+  {id:"v173",series:"F_FA1",title:"불신의 결과",ref:"히브리서 10:38",text:"오직 나의 의인은 믿음으로 말미암아 살리라. 또한 뒤로 물러가면 내 마음이 저를 기뻐하지 아니하리라 하셨느니라."},
+  {id:"v174",series:"F_FA1",title:"믿음의 투쟁",ref:"에베소서 6:16",text:"모든 것 위에 믿음의 방패를 가지고 이로써 능히 악한 자의 모든 화전을 소멸하고."},
+  {id:"v175",series:"F_FA1",title:"믿음의 투쟁",ref:"디모데전서 6:11,12",text:"오직 너 하나님의 사람아, 이것들을 피하고 의와 경건과 믿음과 사랑과 인내와 온유를 좇으며 믿음의 선한 싸움을 싸우라. 영생을 취하라. 이를 위하여 네가 부르심을 입었고 많은 증인 앞에서 선한 증거를 증거하였도다."},
+  {id:"v176",series:"F_FA1",title:"믿음의 근원",ref:"히브리서 11:1",text:"믿음은 바라는 것들의 실상이요 보지 못하는 것들의 증거니."},
+  {id:"v177",series:"F_FA1",title:"믿음의 근원",ref:"로마서 10:17",text:"그러므로 믿음은 들음에서 나며 들음은 그리스도의 말씀으로 말미암았느니라."},
+  {id:"v178",series:"F_FA1",title:"행하는 믿음",ref:"히브리서 6:12",text:"게으르지 아니하고 믿음과 오래 참음으로 말미암아 약속들을 기업으로 받는 자들을 본받는 자 되게 하려는 것이니라."},
+  {id:"v179",series:"F_FA1",title:"행하는 믿음",ref:"야고보서 2:17",text:"이와 같이 행함이 없는 믿음은 그 자체가 죽은 것이라."},
+  {id:"v180",series:"F_FA1",title:"믿음으로 의롭게 됨",ref:"갈라디아서 2:16",text:"사람이 의롭게 되는 것은 율법의 행위에서 난 것이 아니요 오직 예수 그리스도를 믿음으로 말미암는 줄 아는 고로 우리도 그리스도 예수를 믿나니, 이는 우리가 율법의 행위에서 아니고 그리스도를 믿음으로서 의롭다 함을 얻으려 함이라. 율법의 행위로서는 의롭다 함을 얻을 육체가 없느니라."},
+  {id:"v181",series:"F_FA1",title:"믿음으로 의롭게 됨",ref:"로마서 5:1",text:"그러므로 우리가 믿음으로 의롭다 하심을 얻었은즉 우리 주 예수 그리스도로 말미암아 하나님으로 더불어 화평을 누리자."},
+  // ── 180구절: 4. 승리 안에서 행함 - 승리 ──
+  {id:"v182",series:"V_VI1",title:"그리스도 안에 있는 승리",ref:"고린도전서 15:57",text:"우리 주 예수 그리스도로 말미암아 우리에게 이김을 주시는 하나님께 감사하노니."},
+  {id:"v183",series:"V_VI1",title:"그리스도 안에 있는 승리",ref:"고린도후서 2:14",text:"항상 우리를 그리스도 안에서 이기게 하시고 우리로 말미암아 각처에서 그리스도를 아는 냄새를 나타내시는 하나님께 감사하노라."},
+  {id:"v184",series:"V_VI1",title:"승리의 무기",ref:"고린도후서 10:4,5",text:"우리의 싸우는 병기는 육체에 속한 것이 아니요 오직 하나님 앞에서 견고한 진을 파하는 강력이라 모든 이론을 파하며 하나님 아는 것을 대적하여 높아진 것을 다 파하고 모든 생각을 사로잡아 그리스도에게 복종케 하니."},
+  {id:"v185",series:"V_VI1",title:"승리의 무기",ref:"에베소서 6:10,11",text:"종말로 너희가 주 안에서와 그 힘의 능력으로 강건하여지고 마귀의 궤계를 능히 대적하기 위하여 하나님의 전신갑주를 입으라."},
+  {id:"v186",series:"V_VI1",title:"마귀를 이김",ref:"요한계시록 12:11",text:"또 여러 형제가 어린 양의 피와 자기의 증거하는 말을 인하여 저를 이기었으니 그들은 죽기까지 자기 생명을 아끼지 아니하였도다."},
+  {id:"v187",series:"V_VI1",title:"마귀를 이김",ref:"야고보서 4:7,8",text:"그런즉 너희는 하나님께 순복할지어다. 마귀를 대적하라. 그리하면 너희를 피하리라. 하나님을 가까이 하라. 그리하면 너희를 가까이 하시리라. 죄인들아, 손을 깨끗이 하라. 두 마음을 품은 자들아, 마음을 성결케 하라."},
+  {id:"v188",series:"V_VI1",title:"육신을 이김",ref:"로마서 8:5,6",text:"육신을 좇는 자는 육신의 일을, 영을 좇는 자는 영의 일을 생각하나니, 육신의 생각은 사망이요, 영의 생각은 생명과 평안이니라."},
+  {id:"v189",series:"V_VI1",title:"육신을 이김",ref:"로마서 13:14",text:"오직 주 예수 그리스도로 옷 입고 정욕을 위하여 육신의 일을 도모하지 말라."},
+  {id:"v190",series:"V_VI1",title:"세상을 이김",ref:"요한일서 4:4",text:"자녀들아, 너희는 하나님께 속하였고 또 저희를 이기었나니, 이는 너희 안에 계신 이가 세상에 있는 이보다 크심이라."},
+  {id:"v191",series:"V_VI1",title:"세상을 이김",ref:"요한일서 5:4,5",text:"대저 하나님께로서 난 자마다 세상을 이기느니라. 세상을 이긴 이김은 이것이니 우리의 믿음이니라. 예수께서 하나님의 아들이심을 믿는 자가 아니면 세상을 이기는 자가 누구뇨."},
+  {id:"v192",series:"V_VI1",title:"죄를 이김",ref:"시편 37:31",text:"그 마음에는 하나님의 법이 있으니 그 걸음에 실족함이 없으리로다."},
+  {id:"v193",series:"V_VI1",title:"죄를 이김",ref:"로마서 6:12,13",text:"그러므로 너희는 죄로 너희 죽을 몸에 왕 노릇 하지 못하게 하여 몸의 사욕을 순종치 말고, 또한 너희 지체를 불의의 병기로 죄에게 드리지 말고, 오직 너희 자신을 죽은 자 가운데서 다시 산 자 같이 하나님께 드리며, 너희 지체를 의의 병기로 하나님께 드리라."},
+  // ── 180구절: 순결 ──
+  {id:"v194",series:"V_PU1",title:"생각",ref:"빌립보서 4:8",text:"종말로 형제들아, 무엇에든지 참되며 무엇에든지 경건하며 무엇에든지 옳으며 무엇에든지 정결하며 무엇에든지 사랑할 만하며 무엇에든지 칭찬할 만하며 무슨 덕이 있든지 무슨 기림이 있든지 이것들을 생각하라."},
+  {id:"v195",series:"V_PU1",title:"생각",ref:"디도서 1:15",text:"깨끗한 자들에게는 모든 것이 깨끗하나 더럽고 믿지 아니하는 자들에게는 아무것도 깨끗한 것이 없고 오직 저희 마음과 양심이 더러운지라."},
+  {id:"v196",series:"V_PU1",title:"마음",ref:"누가복음 6:45",text:"선한 사람은 마음의 쌓은 선에서 선을 내고 악한 자는 그 쌓은 악에서 악을 내나니, 이는 마음의 가득한 것을 입으로 말함이니라."},
+  {id:"v197",series:"V_PU1",title:"마음",ref:"잠언 4:23",text:"무릇 지킬 만한 것보다 더욱 네 마음을 지키라. 생명의 근원이 이에서 남이니라."},
+  {id:"v198",series:"V_PU1",title:"눈",ref:"마태복음 6:22",text:"눈은 몸의 등불이니, 그러므로 네 눈이 성하면 온 몸이 밝을 것이요."},
+  {id:"v199",series:"V_PU1",title:"눈",ref:"마태복음 5:28",text:"나는 너희에게 이르노니, 여자를 보고 음욕을 품는 자마다 마음에 이미 간음하였느니라."},
+  {id:"v200",series:"V_PU1",title:"몸",ref:"데살로니가전서 4:3",text:"하나님의 뜻은 이것이니 너희의 거룩함이라. 곧 음란을 버리고."},
+  {id:"v201",series:"V_PU1",title:"몸",ref:"고린도전서 6:13",text:"식물은 배를 위하고 배는 식물을 위하나 하나님이 이것 저것 다 폐하시리라. 몸은 음란을 위하지 않고 오직 주를 위하며 주는 몸을 위하시느니라."},
+  {id:"v202",series:"V_PU1",title:"말",ref:"에베소서 4:29",text:"무릇 더러운 말은 너희 입 밖에도 내지 말고 오직 덕을 세우는 데 소용되는 대로 선한 말을 하여 듣는 자들에게 은혜를 끼치게 하라."},
+  {id:"v203",series:"V_PU1",title:"말",ref:"마태복음 12:36,37",text:"내가 너희에게 이르노니, 사람이 무슨 무익한 말을 하든지 심판 날에 이에 대하여 심문을 받으리니, 네 말로 의롭다 함을 받고 네 말로 정죄함을 받으리라."},
+  {id:"v204",series:"V_PU1",title:"행동",ref:"데살로니가전서 5:22",text:"악은 모든 모양이라도 버리라."},
+  {id:"v205",series:"V_PU1",title:"행동",ref:"디모데전서 5:1,2",text:"늙은이를 꾸짖지 말고 권하되 아비에게 하듯 하며, 젊은이를 형제에게 하듯 하고, 늙은 여자를 어미에게 하듯 하며, 젊은 여자를 일절 깨끗함으로 자매에게 하듯 하라."},
+  // ── 180구절: 기도 ──
+  {id:"v206",series:"V_PR1",title:"구하고 행하라",ref:"마태복음 21:22",text:"너희가 기도할 때에 무엇이든지 믿고 구하는 것은 다 받으리라 하시니라."},
+  {id:"v207",series:"V_PR1",title:"구하고 행하라",ref:"마태복음 7:7,8",text:"구하라 그러면 너희에게 주실 것이요, 찾으라 그러면 찾을 것이요, 문을 두드리라 그러면 너희에게 열릴 것이니, 구하는 이마다 얻을 것이요, 찾는 이가 찾을 것이요, 두드리는 이에게 열릴 것이니라."},
+  {id:"v208",series:"V_PR1",title:"은밀한 기도",ref:"마태복음 6:6",text:"너는 기도할 때에 네 골방에 들어가 문을 닫고 은밀한 중에 계신 네 아버지께 기도하라. 은밀한 중에 보시는 네 아버지께서 갚으시리라."},
+  {id:"v209",series:"V_PR1",title:"은밀한 기도",ref:"마가복음 1:35",text:"새벽 오히려 미명에 예수께서 일어나 나가 한적한 곳으로 가사 거기서 기도하시더니."},
+  {id:"v210",series:"V_PR1",title:"하나님의 응답",ref:"예레미야 33:3",text:"너는 내게 부르짖으라. 내가 네게 응답하겠고 네가 알지 못하는 크고 비밀한 일을 네게 보이리라."},
+  {id:"v211",series:"V_PR1",title:"하나님의 응답",ref:"에베소서 3:20",text:"우리 가운데서 역사하시는 능력대로 우리의 온갖 구하는 것이나 생각하는 것에 더 넘치도록 능히 하실 이에게."},
+  {id:"v212",series:"V_PR1",title:"그의 뜻대로 기도함",ref:"요한일서 5:14,15",text:"그를 향하여 우리의 가진바 담대한 것이 이것이니 그의 뜻대로 무엇을 구하면 들으심이라. 우리가 무엇이든지 구하는 바를 들으시는 줄을 안즉 우리가 그에게 구한 그것을 얻은 줄을 또한 아느니라."},
+  {id:"v213",series:"V_PR1",title:"그의 뜻대로 기도함",ref:"데살로니가전서 5:17,18",text:"쉬지 말고 기도하라. 범사에 감사하라. 이는 그리스도 예수 안에서 너희를 향하신 하나님의 뜻이니라."},
+  {id:"v214",series:"V_PR1",title:"중보의 기도",ref:"사무엘상 12:23",text:"나는 너희를 위하여 기도하기를 쉬는 죄를 여호와 앞에 결단코 범치 아니하고 선하고 의로운 도로 너희를 가르칠 것인즉."},
+  {id:"v215",series:"V_PR1",title:"중보의 기도",ref:"마태복음 9:37,38",text:"이에 제자들에게 이르시되, 추수할 것은 많되 일군은 적으니, 그러므로 추수하는 주인에게 청하여 추수할 일군들을 보내어 주소서 하라 하시니라."},
+  {id:"v216",series:"V_PR1",title:"찬양",ref:"히브리서 13:15",text:"이러므로 우리가 예수로 말미암아 항상 찬미의 제사를 하나님께 드리자. 이는 그 이름을 증거하는 입술의 열매니라."},
+  {id:"v217",series:"V_PR1",title:"찬양",ref:"시편 146:1,2",text:"할렐루야, 내 영혼아, 여호와를 찬양하라. 나의 생전에 여호와를 찬양하며 나의 평생에 내 하나님을 찬송하리로다."},
+  // ── 180구절: 5. 그리스도를 증거함 - 전도 ──
+  {id:"v218",series:"W_EV1",title:"모든 사람에게 전파함",ref:"골로새서 1:27,28",text:"하나님이 그들로 하여금 이 비밀의 영광이 이방인 가운데 어떻게 풍성한 것을 알게 하려 하심이라. 이 비밀은 너희 안에 계신 그리스도시니 곧 영광의 소망이니라. 우리가 그를 전파하여 각 사람을 권하고 모든 지혜로 각 사람을 가르침은 각 사람을 그리스도 안에서 완전한 자로 세우려 함이니."},
+  {id:"v219",series:"W_EV1",title:"하나님의 사신이 됨",ref:"고린도후서 5:19,20",text:"이는 하나님께서 그리스도 안에 계시사 세상을 자기와 화목하게 하시며 저희의 죄를 저희에게 돌리지 아니하시고 화목하게 하는 말씀을 우리에게 부탁하셨느니라. 이러므로 우리가 그리스도를 대신하여 사신이 되어 하나님이 우리로 너희를 권면하시는 것같이 그리스도를 대신하여 간구하노니 너희는 하나님과 화목하라."},
+  {id:"v220",series:"W_EV1",title:"하나님을 기쁘시게 함",ref:"데살로니가전서 2:4",text:"오직 하나님의 옳게 여기심을 입어 복음 전할 부탁을 받았으니, 우리가 이와 같이 말함은 사람을 기쁘게 하려 함이 아니요 오직 우리 마음을 감찰하시는 하나님을 기쁘시게 하려 함이라."},
+  {id:"v221",series:"W_EV1",title:"모든 사람을 섬김",ref:"고린도전서 9:19",text:"내가 모든 사람에게 자유하였으나 스스로 모든 사람에게 종이 된 것은 더 많은 사람을 얻고자 함이라."},
+  {id:"v222",series:"W_EV1",title:"시기를 분별함",ref:"요한복음 4:35",text:"너희가 넉 달이 지나야 추수할 때가 이르겠다 하지 아니하느냐. 내가 너희에게 이르노니 눈을 들어 밭을 보라. 희어져 추수하게 되었도다."},
+  {id:"v223",series:"W_EV1",title:"생명을 나눔",ref:"데살로니가전서 2:8",text:"우리가 이같이 너희를 사모하여 하나님의 복음으로만 아니라 우리 목숨까지 너희에게 주기를 즐겨함은 너희가 우리의 사랑하는 자 됨이니라."},
+  {id:"v224",series:"W_EV1",title:"죄의 실재",ref:"로마서 3:10,11,12",text:"기록한바 의인은 없나니 하나도 없으며 깨닫는 자도 없고 하나님을 찾는 자도 없고 다 치우쳐 한가지로 무익하게 되고 선을 행하는 자는 없나니 하나도 없도다."},
+  {id:"v225",series:"W_EV1",title:"죄의 결말",ref:"데살로니가후서 1:8,9",text:"하나님을 모르는 자들과 우리 주 예수의 복음을 복종치 않는 자들에게 형벌을 주시리니 이런 자들이 주의 얼굴과 그의 힘의 영광을 떠나 영원한 멸망의 형벌을 받으리로다."},
+  {id:"v226",series:"W_EV1",title:"그리스도께서 값을 치르심",ref:"베드로전서 2:24",text:"친히 나무에 달려 그 몸으로 우리 죄를 담당하셨으니, 이는 우리로 죄에 대하여 죽고 의에 대하여 살게 하려 하심이라. 저가 채찍에 맞음으로 너희는 나음을 얻었나니."},
+  {id:"v227",series:"W_EV1",title:"선물로 주신 구원",ref:"디모데후서 1:9",text:"하나님이 우리를 구원하사 거룩하신 부르심으로 부르심은 우리의 행위대로 하심이 아니요, 오직 자기 뜻과 영원한 때 전부터 그리스도 예수 안에서 우리에게 주신 은혜대로 하심이라."},
+  {id:"v228",series:"W_EV1",title:"믿고 영접함",ref:"로마서 10:9,10",text:"네가 만일 네 입으로 예수를 주로 시인하며 또 하나님께서 그를 죽은 자 가운데서 살리신 것을 네 마음에 믿으면 구원을 얻으리니, 사람이 마음으로 믿어 의에 이르고 입으로 시인하여 구원에 이르느니니라."},
+  {id:"v229",series:"W_EV1",title:"구원의 확신",ref:"요한복음 10:28,29",text:"내가 저희에게 영생을 주노니 영원히 멸망치 아니할 터이요, 또 저희를 내 손에서 빼앗을 자가 없느니라. 저희를 주신 내 아버지는 만유보다 크시매 아무도 아버지 손에서 빼앗을 수 없느니라."},
+  // ── 180구절: 변명 ──
+  {id:"v230",series:"W_EX1",title:"나는 그렇게 나쁜 사람이 아니다",ref:"잠언 21:2",text:"사람의 행위가 자기 보기에는 모두 정직하여도 여호와는 심령을 감찰하시느니라."},
+  {id:"v231",series:"W_EX1",title:"포기할 게 너무 많다",ref:"마가복음 8:36",text:"사람이 만일 온 천하를 얻고도 제 목숨을 잃으면 무엇이 유익하리요."},
+  {id:"v232",series:"W_EX1",title:"이해할 수 없다",ref:"요한복음 7:17",text:"사람이 하나님의 뜻을 행하려 하면 이 교훈이 하나님께로서 왔는지 내가 스스로 말함인지 알리라."},
+  {id:"v233",series:"W_EX1",title:"나는 아직 그렇게 선하지는 못하다",ref:"누가복음 5:31,32",text:"예수께서 대답하여 가라사대, 건강한 자에게는 의원이 쓸데 없고 병든 자에게라야 쓸데 있나니, 내가 의인을 부르러 온 것이 아니요 죄인을 불러 회개시키러 왔노라."},
+  {id:"v234",series:"W_EX1",title:"사람들이 어떻게 생각할까",ref:"요한복음 5:44",text:"너희가 서로 영광을 취하고 유일하신 하나님께로부터 오는 영광은 구하지 아니하니 어찌 나를 믿을 수 있느냐."},
+  {id:"v235",series:"W_EX1",title:"나는 지속하지 못할 것이다",ref:"히브리서 7:25",text:"그러므로 자기를 힘입어 하나님께 나아가는 자들을 온전히 구원하실 수 있으니, 이는 그가 항상 살아서 저희를 위하여 간구하심이니라."},
+  {id:"v236",series:"W_EX1",title:"좀더 기다려 보겠다",ref:"잠언 27:1",text:"너는 내일 일을 자랑하지 말라. 하루 동안에 무슨 일이 날는지 네가 알 수 없음이니라."},
+  {id:"v237",series:"W_EX1",title:"위선자가 너무 많다",ref:"로마서 14:12",text:"이러므로 우리 각인이 자기 일을 하나님께 직고하리라."},
+  {id:"v238",series:"W_EX1",title:"그리스도를 믿을 수 없다",ref:"요한복음 5:39",text:"너희가 성경에서 영생을 얻는 줄 생각하고 성경을 상고하거니와 이 성경이 곧 내게 대하여 증거하는 것이로다."},
+  {id:"v239",series:"W_EX1",title:"다른 종교는 어떠한가",ref:"잠언 14:12",text:"어떤 길은 사람의 보기에 바르나 필경은 사망의 길이니라."},
+  {id:"v240",series:"W_EX1",title:"하나님은 아무도 지옥에 보내시지 않을 것이다",ref:"마태복음 25:41",text:"또 왼편에 있는 자들에게 이르시되, 저주를 받은 자들아, 나를 떠나 마귀와 그 사자들을 위하여 예비된 영영한 불에 들어가라."},
+  {id:"v241",series:"W_EX1",title:"이교도들은 어떻게 되나",ref:"로마서 1:20",text:"창세로부터 그의 보이지 아니하는 것들 곧 그의 영원하신 능력과 신성이 그 만드신 만물에 분명히 보여 알게 되나니, 그러므로 저희가 핑계치 못할지니라."},
+  // ── 180구절: 신자의 위치 ──
+  {id:"v242",series:"W_BE1",title:"구속받음",ref:"베드로전서 1:18,19",text:"너희가 알거니와, 너희 조상의 유전한 망령된 행실에서 구속된 것은 은이나 금같이 없어질 것으로 한 것이 아니요, 오직 흠 없고 점 없는 어린 양 같은 그리스도의 보배로운 피로 한 것이니라."},
+  {id:"v243",series:"W_BE1",title:"화목하게 됨",ref:"고린도후서 5:18",text:"모든 것이 하나님께로 났나니 저가 그리스도로 말미암아 우리를 자기와 화목하게 하시고 또 우리에게 화목하게 하는 직책을 주셨으니."},
+  {id:"v244",series:"W_BE1",title:"사함받음",ref:"에베소서 1:7",text:"우리가 그리스도 안에서 그의 은혜의 풍성함을 따라 그의 피로 말미암아 구속 곧 죄 사함을 받았으니."},
+  {id:"v245",series:"W_BE1",title:"율법에서 해방됨",ref:"로마서 6:14,15",text:"죄가 너희를 주관치 못하리니, 이는 너희가 법 아래 있지 아니하고 은혜 아래 있음이니라. 그런즉 어찌하리요. 우리가 법 아래 있지 아니하고 은혜 아래 있으니 죄를 지으리요. 그럴 수 없느니라."},
+  {id:"v246",series:"W_BE1",title:"하나님께로 남",ref:"갈라디아서 3:26",text:"너희가 다 믿음으로 말미암아 그리스도 예수 안에서 하나님의 아들이 되었으니."},
+  {id:"v247",series:"W_BE1",title:"제사장이 됨",ref:"베드로전서 2:9",text:"오직 너희는 택하신 족속이요 왕 같은 제사장들이요 거룩한 나라요 그의 소유된 백성이니, 이는 너희를 어두운 데서 불러내어 그의 기이한 빛에 들어가게 하신 자의 아름다운 덕을 선전하게 하려 하심이라."},
+  {id:"v248",series:"W_BE1",title:"의롭게 됨",ref:"고린도후서 5:21",text:"하나님이 죄를 알지도 못하신 자로 우리를 대신하여 죄를 삼으신 것은 우리로 하여금 저의 안에서 하나님의 의가 되게 하려 하심이니라."},
+  {id:"v249",series:"W_BE1",title:"거룩하게 됨",ref:"고린도전서 1:30",text:"너희는 하나님께로부터 나서 그리스도 예수 안에 있고 예수는 하나님께로서 나와서 우리에게 지혜와 의로움과 거룩함과 구속함이 되셨으니."},
+  {id:"v250",series:"W_BE1",title:"완전하게 됨",ref:"히브리서 10:14",text:"저가 한 제물로 거룩하게 된 자들을 영원히 온전케 하셨느니라."},
+  {id:"v251",series:"W_BE1",title:"의롭다 하심",ref:"로마서 3:24",text:"그리스도 예수 안에 있는 구속으로 말미암아 하나님의 은혜로 값없이 의롭다 하심을 얻은 자 되었느니라."},
+  {id:"v252",series:"W_BE1",title:"천국 시민이 됨",ref:"빌립보서 3:20",text:"오직 우리의 시민권은 하늘에 있는지라. 거기로서 구원하는 자 곧 주 예수 그리스도를 기다리노니."},
+  {id:"v253",series:"W_BE1",title:"온전하게 됨",ref:"골로새서 2:9,10",text:"그 안에는 신성의 모든 충만이 육체로 거하시고 너희도 그 안에서 충만하여졌으니 그는 모든 정사와 권세의 머리시라."}
+];
+
+// ══════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════
+let currentUser = null;
+let batchVerses = [];   // 현재 테스트 파트 구절들
+let voiceRec = null;
+let voiceActive = false;
+let voiceTargetId = null;
+
+// ══════════════════════════════════════════════════
+// STORAGE
+// ══════════════════════════════════════════════════
+function save(k,v){try{localStorage.setItem(k,JSON.stringify(v));}catch(e){}}
+function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;}catch(e){return d;}}
+
+// ══════════════════════════════════════════════════
+// AUTH
+// ══════════════════════════════════════════════════
+function switchAuthTab(tab){
+  const isLogin = tab === 'login';
+  document.getElementById('formLogin').style.display = isLogin ? 'block' : 'none';
+  document.getElementById('formJoin').style.display  = isLogin ? 'none'  : 'block';
+  document.getElementById('tabLogin').style.background = isLogin ? 'var(--brown)' : 'var(--cream-dark)';
+  document.getElementById('tabLogin').style.color    = isLogin ? 'var(--gold-light)' : 'var(--text-muted)';
+  document.getElementById('tabJoin').style.background = isLogin ? 'var(--cream-dark)' : 'var(--brown)';
+  document.getElementById('tabJoin').style.color     = isLogin ? 'var(--text-muted)' : 'var(--gold-light)';
+  document.getElementById('loginMsg').textContent = '';
+  document.getElementById('joinMsg').textContent  = '';
+  document.getElementById('idCheck').textContent  = '';
+}
+
+// 아이디 중복 실시간 체크
+function checkIdAvail(){
+  const name = document.getElementById('joinName').value.trim();
+  const el = document.getElementById('idCheck');
+  if(!name){ el.textContent=''; return; }
+  const users = load('nav_users', {});
+  if(users[name]){
+    el.style.color = 'var(--error)';
+    el.textContent = '⚠️ 이미 사용 중인 아이디입니다.';
+  } else {
+    el.style.color = 'var(--ok)';
+    el.textContent = '✅ 사용 가능한 아이디입니다.';
+  }
+}
+
+// 회원가입
+function register(){
+  const name  = document.getElementById('joinName').value.trim();
+  const pin   = document.getElementById('joinPin').value.trim();
+  const pin2  = document.getElementById('joinPin2').value.trim();
+  const msgEl = document.getElementById('joinMsg');
+  msgEl.textContent = '';
+  if(!name){ msgEl.textContent='아이디를 입력하세요'; return; }
+  if(!pin || pin.length < 4){ msgEl.textContent='PIN은 4자리 이상 입력하세요'; return; }
+  if(pin !== pin2){ msgEl.textContent='비밀번호가 일치하지 않습니다'; return; }
+  const users = load('nav_users', {});
+  if(users[name]){
+    msgEl.textContent = '이미 사용 중인 아이디입니다. 다른 아이디를 선택하세요.';
+    return;
+  }
+  users[name] = { pin, records: [] };
+  save('nav_users', users);
+  // 가입 후 자동 로그인
+  setLoggedIn(name);
+}
+
+// 로그인
+function login(){
+  const name  = document.getElementById('loginName').value.trim();
+  const pin   = document.getElementById('loginPin').value.trim();
+  const msgEl = document.getElementById('loginMsg');
+  msgEl.textContent = '';
+  if(!name){ msgEl.textContent='아이디를 입력하세요'; return; }
+  if(!pin){  msgEl.textContent='PIN을 입력하세요'; return; }
+  const users = load('nav_users', {});
+  if(!users[name]){
+    msgEl.textContent = '존재하지 않는 아이디입니다. 회원가입을 먼저 해주세요.';
+    return;
+  }
+  if(users[name].pin !== pin){
+    msgEl.textContent = '비밀번호(PIN)가 다릅니다.';
+    return;
+  }
+  setLoggedIn(name);
+}
+
+function setLoggedIn(name){
+  currentUser = name;
+  document.getElementById('userAvatar').textContent    = name[0].toUpperCase();
+  document.getElementById('userNameDisplay').textContent = name;
+  document.getElementById('homeUserName').textContent  = name;
+  document.getElementById('userBar').style.display  = 'flex';
+  document.getElementById('mainNav').style.display  = 'flex';
+  setTodayVerse();
+  goSection('home');
+}
+
+function logout(){
+  currentUser=null;
+  document.getElementById('userBar').style.display='none';
+  document.getElementById('mainNav').style.display='none';
+  goSection('login');
+}
+
+// ══════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════
+function goSection(name){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.getElementById('sec-'+name).classList.add('active');
+  const tabs=document.querySelectorAll('.nav-tab');
+  const map={'home':0,'test-select':1,'records':2,'ai-guide':3,'browse':4};
+  tabs.forEach(t=>t.classList.remove('active'));
+  if(map[name]!==undefined) tabs[map[name]]?.classList.add('active');
+  if(name==='records') renderRecords();
+  if(name==='test-select') renderSeriesList();
+  if(name==='browse') renderBrowse();
+}
+
+// ══════════════════════════════════════════════════
+// HOME
+// ══════════════════════════════════════════════════
+function setTodayVerse(){
+  const idx=new Date().getDate()%VERSES.length;
+  const v=VERSES[idx];
+  document.getElementById('todayVerse').textContent=v.text;
+  document.getElementById('todayRef').textContent=v.title+' — '+v.ref;
+}
+
+// ══════════════════════════════════════════════════
+// SERIES LIST
+// ══════════════════════════════════════════════════
+function renderSeriesList(){
+  const el=document.getElementById('seriesList');
+  el.innerHTML='';
+  const groups=['5·8구절','60구절','180구절'];
+  const gLabel={'5·8구절':'📗 5·8구절','60구절':'📘 60구절','180구절':'📙 180구절'};
+  groups.forEach(g=>{
+    el.innerHTML+=`<div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;color:var(--brown);margin:16px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--cream-dark)">${gLabel[g]}</div>`;
+    SERIES_INFO.filter(s=>s.group===g).forEach(s=>{
+      const cnt=VERSES.filter(v=>v.series===s.id).length;
+      el.innerHTML+=`<div class="series-item" onclick="startBatchTest('${s.id}')">
+        <div class="series-badge" style="background:${s.color};font-size:10px">${s.id}</div>
+        <div class="series-info"><h4>${s.name}</h4><p>${cnt}구절 전체 — 한번에 작성 후 AI 채점</p></div>
+        <div class="series-count">${cnt}구절</div>
+      </div>`;
+    });
+  });
+}
+
+// ══════════════════════════════════════════════════
+// BATCH TEST — 일괄 테스트 시작
+// ══════════════════════════════════════════════════
+function startBatchTest(sid){
+  batchVerses = VERSES.filter(v=>v.series===sid);
+  const sinfo = SERIES_INFO.find(s=>s.id===sid);
+
+  document.getElementById('batchTitle').textContent = sinfo.name + ' 테스트';
+  document.getElementById('batchSub').textContent =
+    batchVerses.length + '구절 전체를 아래 답안지에 순서대로 작성하고 AI 채점을 누르세요';
+
+  // 답안지 생성
+  const aEl = document.getElementById('answerBlocks');
+  aEl.innerHTML = batchVerses.map((v,i) => `
+    <div class="answer-block" id="block${i}">
+      <div class="answer-block-num">▶ ${i+1}번 구절</div>
+      <div style="display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap">
+        <input class="ans-input" id="ans_title_${i}" type="text" placeholder="제목 (주제)"
+          style="flex:1;min-width:110px;padding:8px 12px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:white;color:var(--text);" />
+        <input class="ans-input" id="ans_ref_${i}" type="text" placeholder="장절 (예: 요한복음 3:16)"
+          style="flex:1;min-width:140px;padding:8px 12px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:white;color:var(--text);" />
+      </div>
+      <textarea id="ans_body_${i}" placeholder="본문 전체를 입력하세요..."
+        style="width:100%;min-height:80px;resize:vertical;padding:8px 12px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Serif KR',serif;line-height:1.8;background:white;color:var(--text);"></textarea>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px">
+        <button class="voice-btn" id="vbtn_${i}" onclick="toggleVoice(${i})">🎤 음성 입력</button>
+        <span class="voice-status" id="vstatus_${i}"></span>
+      </div>
+    </div>
+  `).join('');
+
+  goSection('batch-test');
+}
+
+function clearAll(){
+  if(!confirm('입력한 내용을 모두 지우시겠습니까?')) return;
+  batchVerses.forEach((_,i)=>{
+    document.getElementById('ans_title_'+i).value='';
+    document.getElementById('ans_ref_'+i).value='';
+    document.getElementById('ans_body_'+i).value='';
+  });
+}
+
+// ══════════════════════════════════════════════════
+// AI 채점 — 핵심 기능
+// ══════════════════════════════════════════════════
+async function submitBatchTest(){
+  // 답안 수집
+  const answers = batchVerses.map((v,i)=>({
+    num: i+1,
+    verse: v,
+    inputTitle: (document.getElementById('ans_title_'+i)?.value||'').trim(),
+    inputRef:   (document.getElementById('ans_ref_'+i)?.value||'').trim(),
+    inputBody:  (document.getElementById('ans_body_'+i)?.value||'').trim()
+  }));
+
+  const hasAny = answers.some(a=>a.inputTitle||a.inputRef||a.inputBody);
+  if(!hasAny){ alert('답안을 입력하세요'); return; }
+
+  goSection('grading');
+  const logEl = document.getElementById('gradingLog');
+  const msgEl = document.getElementById('gradingMsg');
+
+  function log(msg){ logEl.innerHTML += msg + '\n'; logEl.scrollTop=logEl.scrollHeight; }
+
+  log('📋 답안 수집 완료: '+answers.length+'구절');
+  msgEl.textContent = 'AI에게 채점 요청 중...';
+
+  // AI 채점 프롬프트 구성
+  const answerText = answers.map(a=>`
+[${a.num}번]
+  제출한 제목: ${a.inputTitle || '(미입력)'}
+  제출한 장절: ${a.inputRef || '(미입력)'}
+  제출한 본문: ${a.inputBody || '(미입력)'}
+  정답 제목: ${a.verse.title}
+  정답 장절: ${a.verse.ref}
+  정답 본문: ${a.verse.text}`).join('\n');
+
+  const prompt = `당신은 네비게이토 성경암송 채점 전문가입니다.
+다음은 학생이 제출한 ${answers.length}개 구절의 답안과 정답입니다.
+각 구절을 아래 기준으로 채점하고 JSON으로만 응답하세요.
+
+채점 기준:
+- 제목(주제) 틀림: -10점
+- 장절 틀림: -5점  
+- 본문 단어 하나 오류: -2점
+- 본문 글자 하나 오류: -1점
+- 미입력 항목은 해당 항목 배점 전액 감점
+- 구절당 기본 점수는 100/${answers.length}점
+- 최소 0점
+⚠️ 구두점(마침표, 쉼표, 느낌표, 물음표 등) 유무 차이는 오류로 처리하지 마세요. 실제 단어·글자 차이만 채점합니다.
+
+반드시 아래 JSON 형식으로만 응답 (마크다운 없이):
+{
+  "results": [
+    {
+      "num": 1,
+      "titleScore": 0 또는 -10,
+      "refScore": 0 또는 -5,
+      "bodyPenalty": 감점숫자(양수),
+      "bodyDetail": "오류 설명",
+      "finalScore": 최종점수,
+      "status": "correct" 또는 "partial" 또는 "wrong" 또는 "skip",
+      "feedback": "구체적 피드백"
+    }
+  ],
+  "totalScore": 합계점수,
+  "grade": "S/A/B/C/F",
+  "summary": "전체 총평"
+}
+
+답안 및 정답:
+${answerText}`;
+
+  try {
+    log('🤖 AI 채점 요청 중...');
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body: JSON.stringify({
+        model:"claude-sonnet-4-20250514",
+        max_tokens:4000,
+        system:"당신은 성경암송 채점 전문가입니다. 반드시 순수 JSON만 응답하세요. 마크다운 코드블록(```json)을 절대 사용하지 마세요.",
+        messages:[{role:"user",content:prompt}]
+      })
+    });
+    const data = await resp.json();
+    log('✅ AI 응답 수신');
+
+    let raw = (data.content?.[0]?.text || '').trim();
+    // 혹시 마크다운 감싸진 경우 제거
+    raw = raw.replace(/^```json\s*/,'').replace(/\s*```$/,'').trim();
+
+    let gradeData;
+    try {
+      gradeData = JSON.parse(raw);
+    } catch(e) {
+      log('⚠️ JSON 파싱 오류, 로컬 채점으로 전환...');
+      gradeData = localGrade(answers);
+    }
+
+    log('📊 채점 완료! 결과 화면으로 이동');
+    showResults(answers, gradeData);
+
+  } catch(err) {
+    log('⚠️ API 오류: '+err.message+' — 로컬 채점 실행');
+    const gradeData = localGrade(answers);
+    showResults(answers, gradeData);
+  }
+}
+
+// 로컬 폴백 채점 (API 실패시)
+function localGrade(answers){
+  const base = 100 / answers.length;
+  let total = 0;
+  const results = answers.map(a=>{
+    let penalty = 0;
+    const titleOk = strSimilarity(a.inputTitle, a.verse.title) >= 0.6;
+    const refOk = normalizeRef(a.inputRef) === normalizeRef(a.verse.ref);
+    if(!a.inputTitle){ penalty+=10; } else if(!titleOk){ penalty+=10; }
+    if(!a.inputRef){ penalty+=5; } else if(!refOk){ penalty+=5; }
+    const bp = bodyPenalty(a.inputBody, a.verse.text);
+    penalty += bp.total;
+    const fs = Math.max(0, Math.round(base - penalty));
+    total += fs;
+    return {
+      num:a.num, titleScore:titleOk?0:-10, refScore:refOk?0:-5,
+      bodyPenalty:bp.total, bodyDetail:bp.desc,
+      finalScore:fs, status: fs>=base*0.85?'correct':fs>0?'partial':(!a.inputBody?'skip':'wrong'),
+      feedback: ''
+    };
+  });
+  const g = total>=95?'S':total>=80?'A':total>=60?'B':total>=40?'C':'F';
+  return { results, totalScore:total, grade:g, summary:'' };
+}
+
+function normalizeRef(s){ return (s||'').replace(/[\s:,\.]/g,''); }
+function strSimilarity(a,b){
+  if(!a||!b) return 0;
+  a=a.replace(/\s/g,''); b=b.replace(/\s/g,'');
+  let m=0; for(const c of a) if(b.includes(c)) m++;
+  return m/Math.max(a.length,b.length);
+}
+// 구두점(마침표·쉼표·느낌표 등) 제거 정규화
+function normPunct(s){ return (s||'').replace(/[.,!?。，、·…:;'"''""『』「」\-]/g,'').replace(/\s+/g,'').trim(); }
+
+// ── LCS(최장공통부분열) 기반 diff ──────────────────────────
+// 단어 배열 A(입력)와 B(정답)을 LCS로 정렬 후
+// 삽입·삭제·수정 연산으로 나눠 정확히 해당 단어만 틀린 것으로 처리
+function lcsTable(a, b){
+  const m=a.length, n=b.length;
+  const dp=Array.from({length:m+1},()=>new Int16Array(n+1));
+  for(let i=1;i<=m;i++)
+    for(let j=1;j<=n;j++)
+      dp[i][j] = a[i-1]===b[j-1] ? dp[i-1][j-1]+1 : Math.max(dp[i-1][j],dp[i][j-1]);
+  return dp;
+}
+
+// diff 연산 목록 반환: {type:'eq'|'del'|'ins'|'sub', inp, ref}
+function wordDiff(inputWords, refWords){
+  // 구두점+공백 제거한 버전으로 LCS 계산
+  const ia = inputWords.map(normPunct);
+  const ra = refWords.map(normPunct);
+  const dp = lcsTable(ia, ra);
+  const ops = [];
+  let i=inputWords.length, j=refWords.length;
+  while(i>0||j>0){
+    if(i>0&&j>0&&ia[i-1]===ra[j-1]){
+      ops.push({type:'eq', inp:inputWords[i-1], ref:refWords[j-1]});
+      i--;j--;
+    } else if(j>0&&(i===0||dp[i][j-1]>=dp[i-1][j])){
+      ops.push({type:'ins', inp:'', ref:refWords[j-1]});   // 정답에만 있음 → 빠짐
+      j--;
+    } else {
+      ops.push({type:'del', inp:inputWords[i-1], ref:''});  // 입력에만 있음 → 추가됨
+      i--;
+    }
+  }
+  ops.reverse();
+  // 인접한 del+ins 쌍을 sub(대체)로 합치기
+  const merged=[];
+  let k=0;
+  while(k<ops.length){
+    if(ops[k].type==='del'&&k+1<ops.length&&ops[k+1].type==='ins'){
+      merged.push({type:'sub', inp:ops[k].inp, ref:ops[k+1].ref});
+      k+=2;
+    } else {
+      merged.push(ops[k]);
+      k++;
+    }
+  }
+  return merged;
+}
+
+function bodyPenalty(input, original){
+  if(!input) return {total:20, desc:'본문 미입력'};
+  const iw = input.split(/\s+/).filter(Boolean);
+  const ow = original.split(/\s+/).filter(Boolean);
+  const ops = wordDiff(iw, ow);
+  let charErr=0, wordErr=0, extraChar=0, extraWord=0;
+  for(const op of ops){
+    if(op.type==='eq') continue;
+    if(op.type==='ins'){
+      // 빠진 단어: 항상 -2점
+      wordErr++;
+    } else if(op.type==='del'){
+      // 여분 단어(정답에 없는 단어): 2글자 이상 -2점, 1글자 -1점
+      const w = normPunct(op.inp);
+      if(w.length >= 2) extraWord++;   // -2점
+      else              extraChar++;   // -1점
+    } else {
+      // sub: 틀린 단어 (정답 단어를 다른 단어로 씀)
+      const a=normPunct(op.inp), b=normPunct(op.ref);
+      let diff=0;
+      for(let c=0;c<Math.max(a.length,b.length);c++) if((a[c]||'')!==(b[c]||'')) diff++;
+      if(diff<=1) charErr++; else wordErr++;
+    }
+  }
+  const total = charErr*1 + wordErr*2 + extraChar*1 + extraWord*2;
+  const parts = [];
+  if(charErr>0)  parts.push(`글자오류 ${charErr}개(-${charErr})`);
+  if(wordErr>0)  parts.push(`단어오류 ${wordErr}개(-${wordErr*2})`);
+  if(extraChar>0) parts.push(`여분1글자 ${extraChar}개(-${extraChar})`);
+  if(extraWord>0) parts.push(`여분단어 ${extraWord}개(-${extraWord*2})`);
+  const desc = parts.length ? parts.join(', ') : '오류 없음';
+  return {total, desc};
+}
+
+// ══════════════════════════════════════════════════
+// 결과 표시
+// ══════════════════════════════════════════════════
+function showResults(answers, gradeData){
+  const totalScore = gradeData.totalScore || 0;
+  const grade = gradeData.grade || 'F';
+  const results = gradeData.results || [];
+
+  // 요약
+  const correct = results.filter(r=>r.status==='correct').length;
+  const partial = results.filter(r=>r.status==='partial').length;
+  const wrong = results.filter(r=>r.status==='wrong'||r.status==='skip').length;
+
+  document.getElementById('sumSeries').textContent = batchVerses[0]?.series ? SERIES_INFO.find(s=>s.id===batchVerses[0].series)?.name||'' : '';
+  document.getElementById('sumScore').textContent = Math.round(totalScore);
+  document.getElementById('sumScore').style.color = grade==='S'?'#F57F17':grade==='A'?'#2E7D32':grade==='B'?'#1565C0':grade==='C'?'#E65100':'#B71C1C';
+  const gradeMsg = {S:'완벽합니다! 🏆',A:'매우 잘했어요! 👏',B:'잘했어요! 📖',C:'더 연습이 필요해요 💪',F:'계속 노력하세요 🙏'}[grade];
+  const gradeEl = document.getElementById('sumGrade');
+  gradeEl.textContent = grade + ' — ' + gradeMsg;
+  gradeEl.className = 'summary-grade g-'+grade.toLowerCase();
+  document.getElementById('sumComment').textContent = gradeData.summary || '';
+  document.getElementById('sSTotal').textContent = answers.length;
+  document.getElementById('sSCorrect').textContent = correct;
+  document.getElementById('sSPartial').textContent = partial;
+  document.getElementById('sSWrong').textContent = wrong;
+
+  // 구절별 결과
+  const grid = document.getElementById('resultGrid');
+  grid.innerHTML = results.map((r,i)=>{
+    const ans = answers[i];
+    const v = ans?.verse;
+    if(!v) return '';
+    const diffHtml = buildDiff(ans.inputBody, v.text);
+    const cls = r.status==='correct'?'correct':r.status==='partial'?'partial':r.status==='skip'?'skip':'wrong';
+    const scoreCls = r.status==='correct'?'correct':r.status==='partial'?'partial':'wrong';
+    const scoreDetail = [
+      r.titleScore!==0?`제목 ${r.titleScore}점`:'제목 ✓',
+      r.refScore!==0?`장절 ${r.refScore}점`:'장절 ✓',
+      r.bodyPenalty>0?`본문 -${r.bodyPenalty}점 (${r.bodyDetail||''})` : '본문 ✓'
+    ].join(' | ');
+    return `<div class="result-card ${cls}">
+      <div class="rc-header">
+        <span class="rc-num">${r.num}번</span>
+        <span class="rc-topic">${v.title}</span>
+        <span class="rc-ref">${v.ref}</span>
+        <span class="rc-score ${scoreCls}">${Math.round(r.finalScore)}점</span>
+      </div>
+      <div class="rc-detail">${scoreDetail}</div>
+      ${r.feedback?`<div style="font-size:12px;color:#555;margin-bottom:8px">💬 ${r.feedback}</div>`:''}
+      <div class="rc-my-label">내 답변 → 원문 비교</div>
+      <div class="rc-compare">${diffHtml}</div>
+      <div class="rc-original">📖 원문: ${v.text}</div>
+    </div>`;
+  }).join('');
+
+  // 기록 저장
+  if(currentUser){
+    const users = load('nav_users',{});
+    if(!users[currentUser]) users[currentUser]={pin:'',records:[]};
+    if(!users[currentUser].records) users[currentUser].records=[];
+    users[currentUser].records.push({
+      date: new Date().toLocaleDateString('ko-KR'),
+      series: SERIES_INFO.find(s=>s.id===batchVerses[0]?.series)?.name||'',
+      score: Math.round(totalScore),
+      total: answers.length,
+      grade,
+      timestamp: Date.now()
+    });
+    save('nav_users', users);
+  }
+
+  goSection('result');
+}
+
+function buildDiff(input, original){
+  if(!input) return '<span class="diff-miss">(미입력)</span>';
+  const iw = input.split(/\s+/).filter(Boolean);
+  const ow = original.split(/\s+/).filter(Boolean);
+  const ops = wordDiff(iw, ow);
+  let html = '';
+  for(const op of ops){
+    if(op.type==='eq'){
+      html += `<span class="diff-ok">${op.ref} </span>`;
+    } else if(op.type==='ins'){
+      // 정답에 있는데 빠진 단어
+      html += `<span class="diff-miss">[${op.ref}] </span>`;
+    } else if(op.type==='del'){
+      // 정답에 없는데 추가로 쓴 단어 → 주황색으로 표시
+      html += `<span style="color:#E65100;background:#FFF3E0;padding:1px 3px;border-radius:3px;font-size:0.92em">${op.inp}(여분) </span>`;
+    } else {
+      // sub: 틀린 단어 → 입력→정답 표시
+      html += `<span class="diff-err">${op.inp}→${op.ref} </span>`;
+    }
+  }
+  return html;
+}
+
+// ══════════════════════════════════════════════════
+// RECORDS
+// ══════════════════════════════════════════════════
+function renderRecords(){
+  if(!currentUser) return;
+  const users = load('nav_users',{});
+  const records = (users[currentUser]?.records||[]).slice().reverse();
+  const chartEl = document.getElementById('recordChart');
+  chartEl.innerHTML = '';
+  const recent = records.slice(0,10).reverse();
+  const maxS = Math.max(...recent.map(r=>r.score),100);
+  recent.forEach(r=>{
+    const h = Math.max(6,Math.round(r.score/maxS*100));
+    const col = r.grade==='S'?'#F57F17':r.grade==='A'?'#2E7D32':r.grade==='B'?'#1565C0':r.grade==='C'?'#E65100':'#C62828';
+    chartEl.innerHTML += `<div class="bar-wrap"><div class="bar" style="height:${h}px;background:${col}"></div><div class="bar-lbl">${r.score}</div></div>`;
+  });
+  const listEl = document.getElementById('recordListEl');
+  if(!records.length){ listEl.innerHTML='<div style="font-size:13px;color:var(--text-muted)">아직 기록이 없습니다.</div>'; return; }
+  listEl.innerHTML = '<div class="rec-list">' + records.map(r=>{
+    const col = r.grade==='S'?'#F57F17':r.grade==='A'?'#2E7D32':r.grade==='B'?'#1565C0':r.grade==='C'?'#E65100':'#C62828';
+    return `<div class="rec-item"><div class="rec-date">${r.date}</div><div class="rec-info"><h4>${r.series}</h4><p>${r.total}구절</p></div><div class="rec-score" style="color:${col}">${r.score}점 ${r.grade}</div></div>`;
+  }).join('') + '</div>';
+}
+
+// ══════════════════════════════════════════════════
+// AI 도우미
+// ══════════════════════════════════════════════════
+async function callClaude(prompt){
+  const r = await fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST", headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({model:"claude-sonnet-4-20250514",max_tokens:800,
+      system:"네비게이토 성경암송 학습 보조자입니다. 한국어로 친절하게 답변하세요.",
+      messages:[{role:"user",content:prompt}]})
+  });
+  const d=await r.json();
+  return d.content?.[0]?.text||'응답을 받지 못했습니다.';
+}
+async function askAI(type){
+  const box=document.getElementById('aiAnswerBox');
+  const txt=document.getElementById('aiAnswerText');
+  box.style.display='block'; txt.className='ai-loading'; txt.textContent='AI가 답변 중...';
+  const v=VERSES[Math.floor(Math.random()*VERSES.length)];
+  let p='';
+  if(type==='random_explain') p=`네비게이토 성경암송 구절 "${v.ref}" (${v.title}) 배경과 의미, 적용점을 설명해주세요. 본문: "${v.text}"`;
+  else if(type==='memory_tip') p=`"${v.ref}" "${v.text}" — 이 구절을 쉽게 외울 연상법과 핵심 키워드를 알려주세요.`;
+  else if(type==='quiz') p=`"${v.ref}" — "${v.text}" 이 구절로 빈칸 채우기 퀴즈 3문제를 만들어주세요. 답도 포함.`;
+  else if(type==='series_overview') p=`네비게이토 주제별 성경암송 A~E 파트(새로운삶/전파함/의뢰함/제자자격/닮아감)의 주제와 연결고리를 설명해주세요.`;
+  const res=await callClaude(p);
+  txt.className=''; txt.textContent=res;
+}
+async function askAICustom(){
+  const q=document.getElementById('aiCustomQ').value.trim();
+  if(!q) return;
+  const box=document.getElementById('aiAnswerBox');
+  const txt=document.getElementById('aiAnswerText');
+  box.style.display='block'; txt.className='ai-loading'; txt.textContent='AI가 답변 중...';
+  const res=await callClaude('네비게이토 성경암송 관련: '+q);
+  txt.className=''; txt.textContent=res;
+}
+
+// ══════════════════════════════════════════════════
+// BROWSE
+// ══════════════════════════════════════════════════
+let browseCat = 'all';
+function setBrowseCat(cat, btn){
+  browseCat = cat;
+  document.querySelectorAll('.cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderBrowse();
+}
+function toggleBrowseGroup(id){
+  const body = document.getElementById('bg_'+id);
+  const arrow = document.getElementById('ba_'+id);
+  if(!body) return;
+  const open = body.style.display !== 'none';
+  body.style.display = open ? 'none' : 'block';
+  arrow.textContent = open ? '▶' : '▼';
+}
+function renderBrowse(){
+  const el=document.getElementById('browseContent');
+  el.innerHTML='';
+
+  // 카테고리 그룹핑
+  const groups = {};
+  SERIES_INFO.forEach(s=>{
+    const grp = s.group || '기타';
+    if(!groups[grp]) groups[grp] = [];
+    groups[grp].push(s);
+  });
+
+  // 표시할 카테고리
+  const catMap = {'all':null,'5·8구절':'5·8구절','60구절':'60구절','180구절':'180구절'};
+  const targetGroup = catMap[browseCat];
+
+  // 180구절 대주제 구조 정의 (SERIES_INFO의 big 필드 기반으로 자동 그룹핑)
+
+  Object.entries(groups).forEach(([grpName, seriesList]) => {
+    if(targetGroup && grpName !== targetGroup) return;
+
+    // 그룹 헤더
+    const grpDiv = document.createElement('div');
+    grpDiv.style.cssText = 'margin-bottom:28px';
+
+    let grpHtml = `<div style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;margin-bottom:14px;padding-bottom:6px;border-bottom:2px solid var(--gold-dark)">${grpName}</div>`;
+
+    // 180구절은 대주제별로 묶기 (SERIES_INFO의 big 필드로 그룹핑)
+    if(grpName === '180구절'){
+      // big 필드 기준으로 그룹핑
+      const bigGroups = {};
+      seriesList.forEach(s => {
+        const b = s.big || '기타';
+        if(!bigGroups[b]) bigGroups[b] = [];
+        bigGroups[b].push(s);
+      });
+      Object.entries(bigGroups).forEach(([bigTitle, matchSeries]) => {
+        if(!matchSeries.length) return;
+
+        grpHtml += `<div style="margin-bottom:20px">
+          <div style="font-family:'Noto Serif KR',serif;font-size:15px;font-weight:700;color:var(--brown);margin-bottom:10px;padding:10px 14px;background:var(--cream-dark);border-radius:8px;border-left:4px solid var(--gold)">${bigTitle}</div>`;
+
+        matchSeries.forEach(s => {
+          const vs = VERSES.filter(v => v.series === s.id);
+          grpHtml += `<div style="margin-bottom:10px">
+            <div onclick="toggleBrowseGroup('${s.id}')" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:10px 16px;background:white;border-radius:9px;border:1px solid var(--cream-dark);user-select:none;transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--cream-dark)'">
+              <div style="width:36px;height:36px;border-radius:50%;background:${s.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0">${vs.length}</div>
+              <div style="flex:1">
+                <div style="font-size:14px;font-weight:600;color:var(--text)">${s.name}</div>
+                <div style="font-size:11px;color:var(--text-muted)">${vs.map(v=>v.title).filter((t,i,a)=>a.indexOf(t)===i).join(' · ')}</div>
+              </div>
+              <span id="ba_${s.id}" style="color:var(--gold-dark);font-size:13px">▼</span>
+            </div>
+            <div id="bg_${s.id}" style="padding:4px 0">
+              ${vs.map((v,i) => `<div style="background:white;border-radius:8px;padding:13px 16px;margin-top:6px;border:1px solid var(--cream-dark);border-left:3px solid ${s.color}">
+                <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;flex-wrap:wrap;gap:6px">
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <span style="font-size:11px;font-weight:700;color:white;background:${s.color};padding:2px 8px;border-radius:10px">${i+1}</span>
+                    <span style="font-size:13px;font-weight:600;color:var(--brown)">${v.title}</span>
+                  </div>
+                  <span style="font-size:12px;color:var(--gold-dark);background:rgba(201,168,76,0.1);padding:2px 10px;border-radius:10px">${v.ref}</span>
+                </div>
+                <div style="font-family:'Noto Serif KR',serif;font-size:13px;line-height:1.9;color:var(--text)">${v.text}</div>
+              </div>`).join('')}
+            </div>
+          </div>`;
+        });
+        grpHtml += '</div>';
+      }); // end bigGroups
+    } else {
+      // 5·8구절, 60구절: 각 시리즈 직접 표시
+      seriesList.forEach(s => {
+        const vs = VERSES.filter(v => v.series === s.id);
+        grpHtml += `<div style="margin-bottom:10px">
+          <div onclick="toggleBrowseGroup('${s.id}')" style="display:flex;align-items:center;gap:10px;cursor:pointer;padding:12px 18px;background:white;border-radius:10px;border:1px solid var(--cream-dark);user-select:none;transition:all 0.2s" onmouseover="this.style.borderColor='var(--gold)'" onmouseout="this.style.borderColor='var(--cream-dark)'">
+            <div style="width:40px;height:40px;border-radius:50%;background:${s.color};display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:700;flex-shrink:0">${vs.length}구절</div>
+            <div style="flex:1">
+              <div style="font-size:15px;font-weight:600;color:var(--text)">${s.name}</div>
+              <div style="font-size:11px;color:var(--text-muted);margin-top:2px">${vs.map(v=>v.title).filter((t,i,a)=>a.indexOf(t)===i).join(' · ')}</div>
+            </div>
+            <span id="ba_${s.id}" style="color:var(--gold-dark);font-size:13px">▼</span>
+          </div>
+          <div id="bg_${s.id}" style="padding:4px 0">
+            ${vs.map((v,i) => `<div style="background:white;border-radius:8px;padding:13px 16px;margin-top:6px;border:1px solid var(--cream-dark);border-left:3px solid ${s.color}">
+              <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:7px;flex-wrap:wrap;gap:6px">
+                <div style="display:flex;align-items:center;gap:8px">
+                  <span style="font-size:11px;font-weight:700;color:white;background:${s.color};padding:2px 8px;border-radius:10px">${i+1}</span>
+                  <span style="font-size:13px;font-weight:600;color:var(--brown)">${v.title}</span>
+                </div>
+                <span style="font-size:12px;color:var(--gold-dark);background:rgba(201,168,76,0.1);padding:2px 10px;border-radius:10px">${v.ref}</span>
+              </div>
+              <div style="font-family:'Noto Serif KR',serif;font-size:13px;line-height:1.9;color:var(--text)">${v.text}</div>
+            </div>`).join('')}
+          </div>
+        </div>`;
+      });
+    }
+
+    grpDiv.innerHTML = grpHtml;
+    el.appendChild(grpDiv);
+  });
+}
+
+// ══════════════════════════════════════════════════
+// VOICE
+// ══════════════════════════════════════════════════
+function toggleVoice(idx){
+  const targetId = 'ans_body_'+idx;
+  const btnId = 'vbtn_'+idx;
+  const statusId = 'vstatus_'+idx;
+  const btn = document.getElementById(btnId);
+  const status = document.getElementById(statusId);
+
+  if(!('webkitSpeechRecognition' in window||'SpeechRecognition' in window)){
+    status.textContent='이 브라우저는 음성 인식을 지원하지 않습니다.'; return;
+  }
+  if(voiceActive && voiceTargetId===targetId){
+    voiceRec?.stop(); return;
+  }
+  if(voiceActive){ voiceRec?.stop(); }
+
+  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
+  voiceRec=new SR();
+  voiceRec.lang='ko-KR';
+  voiceRec.continuous=true;
+  voiceRec.interimResults=true;
+  voiceTargetId=targetId;
+
+  voiceRec.onstart=()=>{
+    voiceActive=true;
+    btn.classList.add('recording');
+    btn.textContent='⏹ 중지';
+    status.textContent='🎙 듣는 중...';
+  };
+  voiceRec.onresult=(e)=>{
+    let final='';
+    for(let i=e.resultIndex;i<e.results.length;i++) if(e.results[i].isFinal) final+=e.results[i][0].transcript;
+    if(final){ const ta=document.getElementById(targetId); ta.value=(ta.value+' '+final).trim(); }
+  };
+  voiceRec.onerror=(e)=>{ status.textContent='오류: '+e.error; };
+  voiceRec.onend=()=>{
+    voiceActive=false; voiceTargetId=null;
+    btn.classList.remove('recording'); btn.textContent='🎤 음성 입력';
+    status.textContent='';
+  };
+  voiceRec.start();
+}
+</script>
+</body>
+</html>
