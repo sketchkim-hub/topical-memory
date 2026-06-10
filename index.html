@@ -177,6 +177,8 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--t
 .back-btn{display:flex;align-items:center;gap:6px;padding:8px 0;font-size:13px;color:var(--text-muted);cursor:pointer;background:none;border:none;font-family:'Noto Sans KR',sans-serif;margin-bottom:16px;}
 .back-btn:hover{color:var(--brown);}
 .voice-status{font-size:11px;color:var(--text-muted);margin-top:4px;min-height:16px;}
+.series-item.selected{border-color:var(--gold);background:rgba(201,168,76,0.08);}
+.series-item.selected .series-info h4{color:var(--brown);}
 .cat-tab{padding:7px 16px;border-radius:20px;border:1px solid var(--cream-dark);background:white;color:var(--text-muted);font-size:13px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all 0.2s;}
 .cat-tab:hover{border-color:var(--gold);}
 .cat-tab.active{background:var(--brown);color:var(--gold-light);border-color:var(--brown);}
@@ -317,8 +319,27 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--t
 <!-- 테스트 선택 -->
 <div class="section" id="sec-test-select">
   <div class="page-title">파트 선택</div>
-  <div class="page-sub">테스트할 파트를 선택하세요. 해당 파트의 구절 전체를 한 화면에서 작성 후 AI가 일괄 채점합니다.</div>
+  <div class="page-sub">테스트할 파트를 <strong>하나 또는 여러 개</strong> 선택한 후 시험 시작을 누르세요. 구절당 10점 기준으로 채점합니다.</div>
+
+  <!-- 묶음 선택 버튼 -->
+  <div id="quickSelectBtns" style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px"></div>
+
+  <!-- 파트 목록 (체크박스) -->
   <div class="series-list" id="seriesList"></div>
+
+  <!-- 시작 버튼 -->
+  <div id="startBarWrap" style="position:sticky;bottom:16px;margin-top:20px;display:none">
+    <div style="background:var(--brown);border-radius:14px;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 4px 20px rgba(92,61,30,0.35)">
+      <div>
+        <div style="color:var(--gold-light);font-size:14px;font-weight:600" id="selectedInfo">0개 파트 선택됨</div>
+        <div style="color:rgba(232,213,160,0.65);font-size:12px;margin-top:2px" id="selectedDetail"></div>
+      </div>
+      <button onclick="startSelectedTest()"
+        style="background:var(--gold);color:var(--brown);border:none;border-radius:10px;padding:10px 22px;font-size:14px;font-weight:700;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+        ✏️ 시험 시작
+      </button>
+    </div>
+  </div>
 </div>
 
 <!-- ══ 60구절 일괄 테스트 ══ -->
@@ -865,40 +886,142 @@ function setTodayVerse(){
 // ══════════════════════════════════════════════════
 // SERIES LIST
 // ══════════════════════════════════════════════════
+// 선택된 파트 ID 목록
+let selectedSeries = new Set();
+
+function toggleSeries(sid, el){
+  if(selectedSeries.has(sid)){
+    selectedSeries.delete(sid);
+    el.classList.remove('selected');
+  } else {
+    selectedSeries.add(sid);
+    el.classList.add('selected');
+  }
+  updateStartBar();
+}
+
+function updateStartBar(){
+  const wrap = document.getElementById('startBarWrap');
+  const info = document.getElementById('selectedInfo');
+  const detail = document.getElementById('selectedDetail');
+  const total = [...selectedSeries].reduce((s,id)=>s+VERSES.filter(v=>v.series===id).length,0);
+  if(selectedSeries.size===0){
+    wrap.style.display='none';
+  } else {
+    wrap.style.display='block';
+    const names = [...selectedSeries].map(id=>SERIES_INFO.find(s=>s.id===id)?.name||id);
+    info.textContent = `${selectedSeries.size}개 파트 선택 · 총 ${total}구절 · ${total*10}점 만점`;
+    detail.textContent = names.join(' + ');
+  }
+  // 체크 아이콘 업데이트
+  document.querySelectorAll('.series-item').forEach(el=>{
+    const sid = el.dataset.sid;
+    const chk = el.querySelector('.series-check');
+    if(!chk) return;
+    if(selectedSeries.has(sid)){
+      el.classList.add('selected');
+      chk.textContent = '✅';
+    } else {
+      el.classList.remove('selected');
+      chk.textContent = '☐';
+    }
+  });
+}
+
+function quickSelect(ids){
+  selectedSeries = new Set(ids);
+  updateStartBar();
+  document.querySelectorAll('.series-item').forEach(el=>{
+    const sid = el.dataset.sid;
+    const chk = el.querySelector('.series-check');
+    if(!chk) return;
+    if(selectedSeries.has(sid)){ el.classList.add('selected'); chk.textContent='✅'; }
+    else { el.classList.remove('selected'); chk.textContent='☐'; }
+  });
+}
+
 function renderSeriesList(){
   const el=document.getElementById('seriesList');
   el.innerHTML='';
+  selectedSeries = new Set();
+  document.getElementById('startBarWrap').style.display='none';
+
   const groups=['5·8구절','60구절','180구절'];
   const gLabel={'5·8구절':'📗 5·8구절','60구절':'📘 60구절','180구절':'📙 180구절'};
   groups.forEach(g=>{
-    el.innerHTML+=`<div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;color:var(--brown);margin:16px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--cream-dark)">${gLabel[g]}</div>`;
+    el.innerHTML+=`<div style="font-family:'Noto Serif KR',serif;font-size:14px;font-weight:700;color:var(--brown);margin:18px 0 8px;padding-bottom:6px;border-bottom:2px solid var(--cream-dark)">${gLabel[g]}</div>`;
     SERIES_INFO.filter(s=>s.group===g).forEach(s=>{
       const cnt=VERSES.filter(v=>v.series===s.id).length;
-      el.innerHTML+=`<div class="series-item" onclick="startBatchTest('${s.id}')">
+      el.innerHTML+=`<div class="series-item" data-sid="${s.id}" onclick="toggleSeries('${s.id}',this)" style="cursor:pointer">
+        <div class="series-check" style="font-size:20px;width:28px;text-align:center;flex-shrink:0">☐</div>
         <div class="series-badge" style="background:${s.color};font-size:10px">${s.id}</div>
-        <div class="series-info"><h4>${s.name}</h4><p>${cnt}구절 전체 — 한번에 작성 후 AI 채점</p></div>
+        <div class="series-info"><h4>${s.name}</h4><p>${cnt}구절 · 구절당 10점 · ${cnt*10}점 만점</p></div>
         <div class="series-count">${cnt}구절</div>
       </div>`;
     });
   });
+
+  // 묶음 선택 버튼 렌더
+  const qb = document.getElementById('quickSelectBtns');
+  const presets = [
+    {label:'5구절 전체', ids:['start']},
+    {label:'8구절 전체', ids:['walk']},
+    {label:'5·8구절 전체', ids:['start','walk']},
+    {label:'60구절 A~E', ids:['A','B','C','D','E']},
+    {label:'5·8·60 전체', ids:['start','walk','A','B','C','D','E']},
+    {label:'180구절 전체', ids:SERIES_INFO.filter(s=>s.group==='180구절').map(s=>s.id)},
+    {label:'전체 253구절', ids:SERIES_INFO.map(s=>s.id)},
+  ];
+  qb.innerHTML = presets.map(p=>{
+    const total = p.ids.reduce((s,id)=>s+VERSES.filter(v=>v.series===id).length,0);
+    return `<button onclick="quickSelect(${JSON.stringify(p.ids)})"
+      style="padding:7px 14px;border-radius:20px;border:1px solid var(--gold-dark);background:var(--cream-dark);color:var(--brown);font-size:12px;cursor:pointer;font-family:'Noto Sans KR',sans-serif;font-weight:500;transition:all 0.2s"
+      onmouseover="this.style.background='var(--brown)';this.style.color='var(--gold-light)'"
+      onmouseout="this.style.background='var(--cream-dark)';this.style.color='var(--brown)'">
+      ${p.label} <span style="opacity:0.65">(${total}구절)</span>
+    </button>`;
+  }).join('');
+}
+
+function startSelectedTest(){
+  if(selectedSeries.size===0){ alert('파트를 1개 이상 선택하세요'); return; }
+  // 선택된 파트를 SERIES_INFO 순서대로 합침
+  batchVerses = SERIES_INFO
+    .filter(s=>selectedSeries.has(s.id))
+    .flatMap(s=>VERSES.filter(v=>v.series===s.id));
+  const names = SERIES_INFO.filter(s=>selectedSeries.has(s.id)).map(s=>s.name);
+  document.getElementById('batchTitle').textContent = names.join(' + ') + ' 테스트';
+  document.getElementById('batchSub').textContent =
+    `총 ${batchVerses.length}구절 · 구절당 10점 · ${batchVerses.length*10}점 만점`;
+  buildAnswerBlocks();
+  goSection('batch-test');
 }
 
 // ══════════════════════════════════════════════════
 // BATCH TEST — 일괄 테스트 시작
 // ══════════════════════════════════════════════════
+// 단일 파트 직접 시작 (기존 호환성 유지)
 function startBatchTest(sid){
-  batchVerses = VERSES.filter(v=>v.series===sid);
-  const sinfo = SERIES_INFO.find(s=>s.id===sid);
+  selectedSeries = new Set([sid]);
+  startSelectedTest();
+}
 
-  document.getElementById('batchTitle').textContent = sinfo.name + ' 테스트';
-  document.getElementById('batchSub').textContent =
-    batchVerses.length + '구절 전체를 아래 답안지에 순서대로 작성하고 AI 채점을 누르세요';
-
-  // 답안지 생성
+function buildAnswerBlocks(){
   const aEl = document.getElementById('answerBlocks');
-  aEl.innerHTML = batchVerses.map((v,i) => `
+  aEl.innerHTML = batchVerses.map((v,i) => {
+    // 파트 구분선: 시리즈가 바뀌는 지점에 구분자 삽입
+    const prevSeries = i>0 ? batchVerses[i-1].series : null;
+    const sinfo = SERIES_INFO.find(s=>s.id===v.series);
+    const divider = (i>0 && v.series!==prevSeries) ?
+      `<div style="margin:20px 0 12px;padding:8px 14px;background:var(--cream-dark);border-radius:8px;font-size:12px;font-weight:600;color:var(--brown);border-left:3px solid ${sinfo?.color||'var(--gold)'}">
+        ── ${sinfo?.name||v.series} ──
+      </div>` : '';
+    return `${divider}
     <div class="answer-block" id="block${i}">
-      <div class="answer-block-num">▶ ${i+1}번 구절</div>
+      <div class="answer-block-num" style="display:flex;align-items:center;gap:8px">
+        <span style="background:${sinfo?.color||'var(--brown)'};color:white;font-size:10px;padding:2px 8px;border-radius:10px">${sinfo?.name||v.series}</span>
+        <span>▶ ${i+1}번 구절</span>
+      </div>
       <div style="display:flex;gap:10px;margin-bottom:8px;flex-wrap:wrap">
         <input class="ans-input" id="ans_title_${i}" type="text" placeholder="제목 (주제)"
           style="flex:1;min-width:110px;padding:8px 12px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:white;color:var(--text);" />
@@ -911,10 +1034,8 @@ function startBatchTest(sid){
         <button class="voice-btn" id="vbtn_${i}" onclick="toggleVoice(${i})">🎤 음성 입력</button>
         <span class="voice-status" id="vstatus_${i}"></span>
       </div>
-    </div>
-  `).join('');
-
-  goSection('batch-test');
+    </div>`;
+  }).join('');
 }
 
 function clearAll(){
@@ -1036,27 +1157,31 @@ ${answerText}`;
 
 // 로컬 폴백 채점 (API 실패시)
 function localGrade(answers){
-  const base = 100 / answers.length;
+  const base = 10; // 구절당 고정 10점
+  const maxTotal = answers.length * base;
   let total = 0;
   const results = answers.map(a=>{
     let penalty = 0;
     const titleOk = strSimilarity(a.inputTitle, a.verse.title) >= 0.6;
     const refOk = normalizeRef(a.inputRef) === normalizeRef(a.verse.ref);
-    if(!a.inputTitle){ penalty+=10; } else if(!titleOk){ penalty+=10; }
-    if(!a.inputRef){ penalty+=5; } else if(!refOk){ penalty+=5; }
+    if(!a.inputTitle){ penalty+=3; } else if(!titleOk){ penalty+=3; }
+    if(!a.inputRef){ penalty+=2; } else if(!refOk){ penalty+=2; }
     const bp = bodyPenalty(a.inputBody, a.verse.text);
-    penalty += bp.total;
-    const fs = Math.max(0, Math.round(base - penalty));
+    // 본문 감점을 10점 기준으로 비례 축소 (원래 100점 기준 → 10점 기준)
+    const bodyPen = Math.round(bp.total * 10 / 100 * 2) / 2; // 세밀하게 반점 단위
+    penalty += bodyPen;
+    const fs = Math.max(0, Math.round((base - penalty) * 10) / 10);
     total += fs;
     return {
-      num:a.num, titleScore:titleOk?0:-10, refScore:refOk?0:-5,
-      bodyPenalty:bp.total, bodyDetail:bp.desc,
+      num:a.num, titleScore:titleOk?0:-3, refScore:refOk?0:-2,
+      bodyPenalty:bodyPen, bodyDetail:bp.desc,
       finalScore:fs, status: fs>=base*0.85?'correct':fs>0?'partial':(!a.inputBody?'skip':'wrong'),
       feedback: ''
     };
   });
-  const g = total>=95?'S':total>=80?'A':total>=60?'B':total>=40?'C':'F';
-  return { results, totalScore:total, grade:g, summary:'' };
+  const pct = total / maxTotal * 100;
+  const g = pct>=95?'S':pct>=80?'A':pct>=60?'B':pct>=40?'C':'F';
+  return { results, totalScore:total, maxTotal, grade:g, summary:'' };
 }
 
 function normalizeRef(s){ return (s||'').replace(/[\s:,\.]/g,''); }
@@ -1164,8 +1289,10 @@ function showResults(answers, gradeData){
   const partial = results.filter(r=>r.status==='partial').length;
   const wrong = results.filter(r=>r.status==='wrong'||r.status==='skip').length;
 
-  document.getElementById('sumSeries').textContent = batchVerses[0]?.series ? SERIES_INFO.find(s=>s.id===batchVerses[0].series)?.name||'' : '';
-  document.getElementById('sumScore').textContent = Math.round(totalScore);
+  const maxTotal = gradeData.maxTotal || (batchVerses.length * 10);
+  const seriesNames = [...new Set(batchVerses.map(v=>v.series))].map(id=>SERIES_INFO.find(s=>s.id===id)?.name||id).join(' + ');
+  document.getElementById('sumSeries').textContent = seriesNames;
+  document.getElementById('sumScore').textContent = Math.round(totalScore) + ' / ' + maxTotal;
   document.getElementById('sumScore').style.color = grade==='S'?'#F57F17':grade==='A'?'#2E7D32':grade==='B'?'#1565C0':grade==='C'?'#E65100':'#B71C1C';
   const gradeMsg = {S:'완벽합니다! 🏆',A:'매우 잘했어요! 👏',B:'잘했어요! 📖',C:'더 연습이 필요해요 💪',F:'계속 노력하세요 🙏'}[grade];
   const gradeEl = document.getElementById('sumGrade');
@@ -1213,8 +1340,9 @@ function showResults(answers, gradeData){
     if(!users[currentUser].records) users[currentUser].records=[];
     users[currentUser].records.push({
       date: new Date().toLocaleDateString('ko-KR'),
-      series: SERIES_INFO.find(s=>s.id===batchVerses[0]?.series)?.name||'',
+      series: [...new Set(batchVerses.map(v=>v.series))].map(id=>SERIES_INFO.find(s=>s.id===id)?.name||id).join(' + '),
       score: Math.round(totalScore),
+      maxScore: gradeData.maxTotal || answers.length*10,
       total: answers.length,
       grade,
       timestamp: Date.now()
