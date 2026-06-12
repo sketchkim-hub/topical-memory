@@ -246,7 +246,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--t
     <p>The Navigators Scripture Memory</p>
 
     <!-- 탭 -->
-    <div style="display:flex;border:1px solid var(--cream-dark);border-radius:10px;overflow:hidden;margin:18px 0 20px">
+    <div id="authTabBar" style="display:flex;border:1px solid var(--cream-dark);border-radius:10px;overflow:hidden;margin:18px 0 20px">
       <button id="tabLogin" onclick="switchAuthTab('login')"
         style="flex:1;padding:10px;border:none;background:var(--brown);color:var(--gold-light);font-size:13px;font-weight:600;cursor:pointer;font-family:'Noto Sans KR',sans-serif;transition:all 0.2s">
         🔑 로그인
@@ -260,7 +260,16 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--t
     <!-- 로그인 폼 -->
     <div id="formLogin">
       <div class="form-group"><label>아이디</label><input type="text" id="loginName" placeholder="가입한 아이디" onkeydown="if(event.key==='Enter')login()"/></div>
-      <div class="form-group"><label>비밀번호 (PIN)</label><input type="password" id="loginPin" placeholder="가입시 설정한 PIN" maxlength="20" onkeydown="if(event.key==='Enter')login()"/></div>
+      <div class="form-group">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <label style="margin:0">비밀번호 (PIN)</label>
+          <button onclick="switchAuthTab('reset')" type="button"
+            style="background:none;border:none;font-size:11px;color:var(--gold-dark);cursor:pointer;font-family:'Noto Sans KR',sans-serif;padding:0;text-decoration:underline">
+            비밀번호를 잊으셨나요?
+          </button>
+        </div>
+        <input type="password" id="loginPin" placeholder="가입시 설정한 PIN" maxlength="20" onkeydown="if(event.key==='Enter')login()"/>
+      </div>
       <div id="loginMsg" style="min-height:18px;font-size:12px;color:var(--error);margin-bottom:8px;text-align:left"></div>
       <button class="btn-primary" onclick="login()">로그인</button>
       <div style="margin-top:10px;font-size:12px;color:var(--text-muted)">계정이 없으시면 회원가입 탭에서 가입하세요</div>
@@ -268,12 +277,88 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--t
 
     <!-- 회원가입 폼 -->
     <div id="formJoin" style="display:none">
-      <div class="form-group"><label>아이디 <span style="color:#999;font-size:10px">(한글·영문 가능)</span></label><input type="text" id="joinName" placeholder="사용할 아이디" oninput="checkIdAvail()" onkeydown="if(event.key==='Enter')register()"/></div>
+      <div class="form-group"><label>아이디 <span style="color:#999;font-size:10px">(한글·영문 가능)</span></label>
+        <input type="text" id="joinName" placeholder="사용할 아이디" oninput="checkIdAvail()" onkeydown="if(event.key==='Enter')register()"/>
+      </div>
       <div id="idCheck" style="min-height:18px;font-size:12px;margin:-8px 0 8px;text-align:left"></div>
-      <div class="form-group"><label>비밀번호 (PIN) <span style="color:#999;font-size:10px">(숫자·문자 조합)</span></label><input type="password" id="joinPin" placeholder="4~10자리" maxlength="20" onkeydown="if(event.key==='Enter')register()"/></div>
-      <div class="form-group"><label>비밀번호 확인</label><input type="password" id="joinPin2" placeholder="비밀번호 다시 입력" maxlength="20" onkeydown="if(event.key==='Enter')register()"/></div>
+      <div class="form-group"><label>비밀번호 (PIN) <span style="color:#999;font-size:10px">(숫자·문자 조합)</span></label>
+        <input type="password" id="joinPin" placeholder="4~10자리" maxlength="20" onkeydown="if(event.key==='Enter')register()"/>
+      </div>
+      <div class="form-group"><label>비밀번호 확인</label>
+        <input type="password" id="joinPin2" placeholder="비밀번호 다시 입력" maxlength="20" onkeydown="if(event.key==='Enter')register()"/>
+      </div>
+      <!-- 보안 질문 -->
+      <div style="background:var(--cream);border-radius:8px;padding:12px 14px;margin-bottom:14px;border-left:3px solid var(--gold)">
+        <div style="font-size:12px;font-weight:600;color:var(--brown);margin-bottom:8px">🔐 비밀번호 분실 시 본인 확인용 보안 질문</div>
+        <div class="form-group" style="margin-bottom:8px">
+          <label style="font-size:11px">질문 선택</label>
+          <select id="joinSecQ" style="width:100%;padding:8px 12px;border:1px solid #E0D8C8;border-radius:8px;font-size:12px;font-family:'Noto Sans KR',sans-serif;background:white;color:var(--text)">
+            <option value="">-- 질문을 선택하세요 --</option>
+            <option value="내가 처음 암송한 성경 구절은?">내가 처음 암송한 성경 구절은?</option>
+            <option value="내가 가장 좋아하는 성경 인물은?">내가 가장 좋아하는 성경 인물은?</option>
+            <option value="내가 다니는 교회 이름은?">내가 다니는 교회 이름은?</option>
+            <option value="나를 신앙으로 이끌어 준 사람은?">나를 신앙으로 이끌어 준 사람은?</option>
+            <option value="내가 처음 성경을 읽은 나이는?">내가 처음 성경을 읽은 나이는?</option>
+            <option value="내 어머니의 이름은?">내 어머니의 이름은?</option>
+            <option value="내가 태어난 도시는?">내가 태어난 도시는?</option>
+            <option value="직접 입력">직접 입력</option>
+          </select>
+        </div>
+        <div class="form-group" id="customQWrap" style="display:none;margin-bottom:8px">
+          <label style="font-size:11px">직접 입력한 질문</label>
+          <input type="text" id="joinSecQCustom" placeholder="나만 아는 질문을 입력하세요" maxlength="50"
+            style="width:100%;padding:8px 12px;border:1px solid #E0D8C8;border-radius:8px;font-size:12px;font-family:'Noto Sans KR',sans-serif;background:white;color:var(--text);"/>
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label style="font-size:11px">답변 <span style="color:#999;font-size:10px">(대소문자 구분 없음)</span></label>
+          <input type="text" id="joinSecA" placeholder="질문에 대한 답을 입력하세요" maxlength="30"
+            style="width:100%;padding:8px 12px;border:1px solid #E0D8C8;border-radius:8px;font-size:12px;font-family:'Noto Sans KR',sans-serif;background:white;color:var(--text);"/>
+        </div>
+      </div>
       <div id="joinMsg" style="min-height:18px;font-size:12px;color:var(--error);margin-bottom:8px;text-align:left"></div>
       <button class="btn-primary" onclick="register()">가입하기</button>
+    </div>
+
+    <!-- 비밀번호 재설정 폼 -->
+    <div id="formReset" style="display:none">
+      <!-- STEP 1: 아이디 입력 -->
+      <div id="resetStep1">
+        <div style="font-size:13px;font-weight:600;color:var(--brown);margin-bottom:12px;text-align:left">🔐 비밀번호 재설정</div>
+        <div class="form-group"><label>아이디</label>
+          <input type="text" id="resetName" placeholder="가입한 아이디" onkeydown="if(event.key==='Enter')resetStep1()"/>
+        </div>
+        <div id="resetMsg1" style="min-height:18px;font-size:12px;color:var(--error);margin-bottom:8px;text-align:left"></div>
+        <button class="btn-primary" onclick="resetStep1()">다음</button>
+      </div>
+      <!-- STEP 2: 보안 질문 답변 -->
+      <div id="resetStep2" style="display:none">
+        <div style="font-size:13px;font-weight:600;color:var(--brown);margin-bottom:12px;text-align:left">🔐 본인 확인</div>
+        <div style="background:var(--cream);border-radius:8px;padding:12px 14px;margin-bottom:12px;font-size:13px;font-weight:600;color:var(--brown)" id="resetQDisplay"></div>
+        <div class="form-group"><label>답변</label>
+          <input type="text" id="resetAns" placeholder="보안 질문의 답을 입력하세요" onkeydown="if(event.key==='Enter')resetStep2()"/>
+        </div>
+        <div id="resetMsg2" style="min-height:18px;font-size:12px;color:var(--error);margin-bottom:8px;text-align:left"></div>
+        <button class="btn-primary" onclick="resetStep2()">확인</button>
+      </div>
+      <!-- STEP 3: 새 비밀번호 입력 -->
+      <div id="resetStep3" style="display:none">
+        <div style="font-size:13px;font-weight:600;color:var(--brown);margin-bottom:12px;text-align:left">🔐 새 비밀번호 설정</div>
+        <div class="form-group"><label>새 비밀번호</label>
+          <input type="password" id="resetNewPin" placeholder="4~20자리" maxlength="20" onkeydown="if(event.key==='Enter')resetStep3()"/>
+        </div>
+        <div class="form-group"><label>새 비밀번호 확인</label>
+          <input type="password" id="resetNewPin2" placeholder="새 비밀번호 다시 입력" maxlength="20" onkeydown="if(event.key==='Enter')resetStep3()"/>
+        </div>
+        <div id="resetMsg3" style="min-height:18px;font-size:12px;color:var(--error);margin-bottom:8px;text-align:left"></div>
+        <button class="btn-primary" onclick="resetStep3()">비밀번호 변경</button>
+      </div>
+      <!-- 취소 -->
+      <div style="margin-top:12px">
+        <button onclick="switchAuthTab('login')" type="button"
+          style="background:none;border:none;font-size:12px;color:var(--text-muted);cursor:pointer;font-family:'Noto Sans KR',sans-serif;width:100%;padding:6px;text-decoration:underline">
+          ← 로그인으로 돌아가기
+        </button>
+      </div>
     </div>
   </div>
 </div>
@@ -516,6 +601,32 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--t
         <div id="geminiTestMsg" style="font-size:12px;margin-top:8px;min-height:18px;text-align:center"></div>
       </div>
     </div>
+  </div>
+
+  <!-- 비밀번호 변경 (로그인된 상태) -->
+  <div style="background:white;border-radius:14px;padding:22px;box-shadow:0 2px 8px rgba(92,61,30,0.08);margin-bottom:16px">
+    <div style="font-size:15px;font-weight:700;color:var(--brown);margin-bottom:4px">🔑 비밀번호 변경</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:16px">현재 비밀번호 확인 후 새 비밀번호로 변경합니다</div>
+    <div class="form-group">
+      <label style="font-size:12px">현재 비밀번호</label>
+      <input type="password" id="chgOldPin" placeholder="현재 비밀번호 입력" maxlength="20"
+        style="width:100%;padding:9px 13px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--text)"/>
+    </div>
+    <div class="form-group">
+      <label style="font-size:12px">새 비밀번호</label>
+      <input type="password" id="chgNewPin" placeholder="4~20자리" maxlength="20"
+        style="width:100%;padding:9px 13px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--text)"/>
+    </div>
+    <div class="form-group">
+      <label style="font-size:12px">새 비밀번호 확인</label>
+      <input type="password" id="chgNewPin2" placeholder="새 비밀번호 다시 입력" maxlength="20"
+        style="width:100%;padding:9px 13px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--text)"/>
+    </div>
+    <div id="chgPinMsg" style="font-size:12px;margin-bottom:8px;min-height:18px"></div>
+    <button onclick="changePassword()"
+      style="width:100%;padding:11px;background:var(--brown);color:var(--gold-light);border:none;border-radius:8px;font-size:14px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+      비밀번호 변경
+    </button>
   </div>
 
   <!-- 설정 안내 -->
@@ -866,16 +977,32 @@ function load(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d;
 // AUTH
 // ══════════════════════════════════════════════════
 function switchAuthTab(tab){
-  const isLogin = tab === 'login';
-  document.getElementById('formLogin').style.display = isLogin ? 'block' : 'none';
-  document.getElementById('formJoin').style.display  = isLogin ? 'none'  : 'block';
-  document.getElementById('tabLogin').style.background = isLogin ? 'var(--brown)' : 'var(--cream-dark)';
-  document.getElementById('tabLogin').style.color    = isLogin ? 'var(--gold-light)' : 'var(--text-muted)';
-  document.getElementById('tabJoin').style.background = isLogin ? 'var(--cream-dark)' : 'var(--brown)';
-  document.getElementById('tabJoin').style.color     = isLogin ? 'var(--text-muted)' : 'var(--gold-light)';
-  document.getElementById('loginMsg').textContent = '';
-  document.getElementById('joinMsg').textContent  = '';
-  document.getElementById('idCheck').textContent  = '';
+  // 폼 전환
+  document.getElementById('formLogin').style.display = tab==='login' ? 'block' : 'none';
+  document.getElementById('formJoin').style.display  = tab==='join'  ? 'block' : 'none';
+  document.getElementById('formReset').style.display = tab==='reset' ? 'block' : 'none';
+
+  // 탭 바 표시: reset 탭은 탭 버튼 숨김
+  document.getElementById('authTabBar').style.display = tab==='reset' ? 'none' : 'flex';
+
+  // 탭 버튼 활성화
+  document.getElementById('tabLogin').style.background = tab==='login' ? 'var(--brown)' : 'var(--cream-dark)';
+  document.getElementById('tabLogin').style.color      = tab==='login' ? 'var(--gold-light)' : 'var(--text-muted)';
+  document.getElementById('tabJoin').style.background  = tab==='join'  ? 'var(--brown)' : 'var(--cream-dark)';
+  document.getElementById('tabJoin').style.color       = tab==='join'  ? 'var(--gold-light)' : 'var(--text-muted)';
+
+  // 메시지 초기화
+  ['loginMsg','joinMsg','idCheck','resetMsg1','resetMsg2','resetMsg3'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.textContent='';
+  });
+
+  // reset 탭 진입 시 step1 초기화
+  if(tab==='reset'){
+    document.getElementById('resetStep1').style.display='block';
+    document.getElementById('resetStep2').style.display='none';
+    document.getElementById('resetStep3').style.display='none';
+    document.getElementById('resetName').value='';
+  }
 }
 
 // 아이디 중복 실시간 체크
@@ -894,6 +1021,15 @@ function checkIdAvail(){
 }
 
 // 회원가입
+// 보안 질문 직접입력 toggle
+document.addEventListener('DOMContentLoaded', ()=>{
+  const sel = document.getElementById('joinSecQ');
+  if(sel) sel.addEventListener('change', ()=>{
+    const wrap = document.getElementById('customQWrap');
+    if(wrap) wrap.style.display = sel.value==='직접 입력' ? 'block' : 'none';
+  });
+});
+
 function register(){
   const name  = document.getElementById('joinName').value.trim();
   const pin   = document.getElementById('joinPin').value.trim();
@@ -903,14 +1039,21 @@ function register(){
   if(!name){ msgEl.textContent='아이디를 입력하세요'; return; }
   if(!pin || pin.length < 4){ msgEl.textContent='PIN은 4자리 이상 입력하세요'; return; }
   if(pin !== pin2){ msgEl.textContent='비밀번호가 일치하지 않습니다'; return; }
+
+  // 보안 질문 검증
+  let secQ = document.getElementById('joinSecQ').value;
+  if(secQ==='직접 입력') secQ = document.getElementById('joinSecQCustom').value.trim();
+  const secA = document.getElementById('joinSecA').value.trim();
+  if(!secQ){ msgEl.textContent='비밀번호 분실 대비 보안 질문을 선택하세요'; return; }
+  if(!secA){ msgEl.textContent='보안 질문의 답을 입력하세요'; return; }
+
   const users = load('nav_users', {});
   if(users[name]){
     msgEl.textContent = '이미 사용 중인 아이디입니다. 다른 아이디를 선택하세요.';
     return;
   }
-  users[name] = { pin, records: [] };
+  users[name] = { pin, secQ, secA: secA.toLowerCase(), records: [] };
   save('nav_users', users);
-  // 가입 후 자동 로그인
   setLoggedIn(name);
 }
 
@@ -950,6 +1093,70 @@ function logout(){
   document.getElementById('userBar').style.display='none';
   document.getElementById('mainNav').style.display='none';
   goSection('login');
+}
+
+// ── 비밀번호 재설정 3단계 ──
+let _resetTarget = ''; // 재설정 중인 아이디 임시 저장
+
+function resetStep1(){
+  const name  = document.getElementById('resetName').value.trim();
+  const msg   = document.getElementById('resetMsg1');
+  msg.textContent = '';
+  if(!name){ msg.textContent='아이디를 입력하세요'; return; }
+  const users = load('nav_users', {});
+  if(!users[name]){ msg.textContent='존재하지 않는 아이디입니다'; return; }
+  if(!users[name].secQ){
+    msg.style.color='#E65100';
+    msg.textContent='이 계정은 보안 질문이 설정되어 있지 않습니다. (구버전 가입 계정) 관리자에게 문의하거나 새 계정을 만드세요.';
+    return;
+  }
+  _resetTarget = name;
+  document.getElementById('resetQDisplay').textContent='❓ '+users[name].secQ;
+  document.getElementById('resetStep1').style.display='none';
+  document.getElementById('resetStep2').style.display='block';
+  document.getElementById('resetAns').value='';
+  document.getElementById('resetMsg2').textContent='';
+}
+
+function resetStep2(){
+  const ans = document.getElementById('resetAns').value.trim().toLowerCase();
+  const msg = document.getElementById('resetMsg2');
+  msg.textContent = '';
+  if(!ans){ msg.textContent='답변을 입력하세요'; return; }
+  const users = load('nav_users', {});
+  if(!users[_resetTarget]){ msg.textContent='오류가 발생했습니다. 처음부터 다시 시도하세요'; return; }
+  if(users[_resetTarget].secA !== ans){
+    msg.textContent='답변이 틀립니다. 다시 확인해주세요';
+    return;
+  }
+  document.getElementById('resetStep2').style.display='none';
+  document.getElementById('resetStep3').style.display='block';
+  document.getElementById('resetNewPin').value='';
+  document.getElementById('resetNewPin2').value='';
+  document.getElementById('resetMsg3').textContent='';
+}
+
+function resetStep3(){
+  const newPin  = document.getElementById('resetNewPin').value.trim();
+  const newPin2 = document.getElementById('resetNewPin2').value.trim();
+  const msg     = document.getElementById('resetMsg3');
+  msg.textContent = '';
+  if(!newPin || newPin.length<4){ msg.textContent='새 비밀번호는 4자리 이상이어야 합니다'; return; }
+  if(newPin !== newPin2){ msg.textContent='비밀번호가 일치하지 않습니다'; return; }
+  const users = load('nav_users', {});
+  if(!users[_resetTarget]){ msg.textContent='오류가 발생했습니다'; return; }
+  users[_resetTarget].pin = newPin;
+  save('nav_users', users);
+  msg.style.color='#2E7D32';
+  msg.textContent='✅ 비밀번호가 변경됐습니다!';
+  // 1.5초 후 로그인 화면으로 이동
+  setTimeout(()=>{
+    _resetTarget='';
+    document.getElementById('resetMsg3').textContent='';
+    switchAuthTab('login');
+    const loginName = document.getElementById('loginName');
+    if(loginName){ loginName.value=_resetTarget||'';}
+  }, 1500);
 }
 
 // ══════════════════════════════════════════════════
@@ -1580,6 +1787,36 @@ async function testGemini(){
 function initSettingsUI(){
   const engine = getCurrentEngine();
   selectEngine(engine);
+  // 비밀번호 변경 폼 초기화
+  ['chgOldPin','chgNewPin','chgNewPin2'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  const m=document.getElementById('chgPinMsg');
+  if(m){ m.textContent=''; }
+}
+
+function changePassword(){
+  const oldPin  = document.getElementById('chgOldPin').value.trim();
+  const newPin  = document.getElementById('chgNewPin').value.trim();
+  const newPin2 = document.getElementById('chgNewPin2').value.trim();
+  const msg     = document.getElementById('chgPinMsg');
+  msg.style.color='var(--error)';
+  msg.textContent='';
+  if(!currentUser){ msg.textContent='로그인이 필요합니다'; return; }
+  if(!oldPin){ msg.textContent='현재 비밀번호를 입력하세요'; return; }
+  if(!newPin || newPin.length<4){ msg.textContent='새 비밀번호는 4자리 이상이어야 합니다'; return; }
+  if(newPin!==newPin2){ msg.textContent='새 비밀번호가 일치하지 않습니다'; return; }
+  const users = load('nav_users', {});
+  if(!users[currentUser]){ msg.textContent='사용자 정보를 찾을 수 없습니다'; return; }
+  if(users[currentUser].pin !== oldPin){ msg.textContent='현재 비밀번호가 다릅니다'; return; }
+  users[currentUser].pin = newPin;
+  save('nav_users', users);
+  msg.style.color='#2E7D32';
+  msg.textContent='✅ 비밀번호가 성공적으로 변경됐습니다!';
+  ['chgOldPin','chgNewPin','chgNewPin2'].forEach(id=>{
+    const el=document.getElementById(id); if(el) el.value='';
+  });
+  setTimeout(()=>{ if(msg) msg.textContent=''; }, 3000);
 }
 
 // ── Gemini API 호출 ──
