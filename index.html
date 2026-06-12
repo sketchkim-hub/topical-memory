@@ -227,6 +227,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--t
   <button class="nav-tab" onclick="goSection('records')">기록</button>
   <button class="nav-tab" onclick="goSection('ai-guide')">AI 도우미</button>
   <button class="nav-tab" onclick="goSection('browse')">구절 열람</button>
+  <button class="nav-tab" onclick="goSection('settings')">⚙️ 설정</button>
 </nav>
 
 <div class="main">
@@ -358,7 +359,7 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--t
     <div class="answer-sheet-sub">각 구절의 제목(주제), 장절, 본문을 순서대로 입력하세요. 음성 입력도 사용 가능합니다.</div>
     <div id="answerBlocks"></div>
     <div class="action-bar">
-      <button class="btn-action btn-submit" id="gradingBtn" onclick="submitBatchTest()">🤖 AI 채점하기</button>
+      <button class="btn-action btn-submit" id="gradingBtn" onclick="submitBatchTest()" style="position:relative">🤖 AI 채점하기 <span id="engineBadge" style="font-size:10px;background:rgba(255,255,255,0.2);padding:2px 7px;border-radius:8px;margin-left:6px">Claude</span></button>
       <button class="btn-action btn-secondary" onclick="clearAll()">🗑 전체 지우기</button>
     </div>
   </div>
@@ -435,6 +436,99 @@ body{font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--t
     <button class="cat-btn" onclick="setBrowseCat('180구절',this)">180구절</button>
   </div>
   <div id="browseContent"></div>
+</div>
+
+<!-- 설정 -->
+<div class="section" id="sec-settings">
+  <div class="page-title">설정</div>
+  <div class="page-sub">AI 채점 엔진 및 앱 설정</div>
+
+  <!-- AI 엔진 선택 -->
+  <div style="background:white;border-radius:14px;padding:22px;box-shadow:0 2px 8px rgba(92,61,30,0.08);margin-bottom:16px">
+    <div style="font-size:15px;font-weight:700;color:var(--brown);margin-bottom:4px">🤖 채점 AI 엔진 선택</div>
+    <div style="font-size:12px;color:var(--text-muted);margin-bottom:18px">채점 및 AI 도우미에 사용할 엔진을 선택하세요</div>
+
+    <!-- Claude (기본) -->
+    <div id="engine-claude" onclick="selectEngine('claude')"
+      style="border:2px solid var(--gold);border-radius:12px;padding:16px;margin-bottom:10px;cursor:pointer;transition:all 0.2s;background:rgba(201,168,76,0.06)">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:50%;background:#5C3D1E;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">🟤</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:14px;font-weight:700;color:var(--brown)">Claude (Anthropic)</span>
+            <span id="badge-claude" style="font-size:10px;background:var(--gold);color:var(--brown);padding:2px 8px;border-radius:10px;font-weight:700">현재 사용 중</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px">API 키 불필요 · claude.ai 환경에서 자동 인증</div>
+        </div>
+        <div id="check-claude" style="font-size:20px">✅</div>
+      </div>
+    </div>
+
+    <!-- Gemini -->
+    <div id="engine-gemini" onclick="selectEngine('gemini')"
+      style="border:2px solid var(--cream-dark);border-radius:12px;padding:16px;cursor:pointer;transition:all 0.2s">
+      <div style="display:flex;align-items:center;gap:12px">
+        <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#4285F4,#34A853,#FBBC04,#EA4335);display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">✨</div>
+        <div style="flex:1">
+          <div style="display:flex;align-items:center;gap:8px">
+            <span style="font-size:14px;font-weight:700;color:var(--text)">Gemini (Google)</span>
+            <span id="badge-gemini" style="font-size:10px;background:#E8F5E9;color:#2E7D32;padding:2px 8px;border-radius:10px;font-weight:700;display:none">현재 사용 중</span>
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);margin-top:3px">Google AI Studio에서 무료 API 키 발급 가능</div>
+        </div>
+        <div id="check-gemini" style="font-size:20px;color:#ccc">☐</div>
+      </div>
+
+      <!-- Gemini API 키 입력 (엔진 선택 시 표시) -->
+      <div id="gemini-key-area" style="display:none;margin-top:14px;padding-top:14px;border-top:1px solid var(--cream-dark)">
+        <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:6px">
+          Gemini API 키
+          <a href="https://aistudio.google.com/app/apikey" target="_blank"
+            style="margin-left:8px;color:var(--gold-dark);font-size:11px;text-decoration:none">
+            🔑 무료 키 발급받기 →
+          </a>
+        </label>
+        <div style="display:flex;gap:8px">
+          <input type="password" id="geminiKeyInput" placeholder="AIza..." maxlength="60"
+            onclick="event.stopPropagation()"
+            style="flex:1;padding:9px 13px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--text);"/>
+          <button onclick="event.stopPropagation();saveGeminiKey()"
+            style="padding:9px 18px;background:var(--brown);color:var(--gold-light);border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif;white-space:nowrap">
+            저장
+          </button>
+        </div>
+        <div id="geminiKeyMsg" style="font-size:12px;margin-top:6px;min-height:18px"></div>
+        <!-- 모델 선택 -->
+        <div style="margin-top:12px">
+          <label style="font-size:12px;font-weight:600;color:var(--text-muted);display:block;margin-bottom:6px">Gemini 모델</label>
+          <select id="geminiModel" onclick="event.stopPropagation()"
+            style="width:100%;padding:9px 13px;border:1px solid #E0D8C8;border-radius:8px;font-size:13px;font-family:'Noto Sans KR',sans-serif;background:var(--cream);color:var(--text)">
+            <option value="gemini-2.0-flash">gemini-2.0-flash (빠름 · 무료)</option>
+            <option value="gemini-1.5-flash">gemini-1.5-flash (안정적)</option>
+            <option value="gemini-1.5-pro">gemini-1.5-pro (고성능)</option>
+          </select>
+        </div>
+        <!-- 연결 테스트 -->
+        <button onclick="event.stopPropagation();testGemini()"
+          style="margin-top:10px;width:100%;padding:9px;background:linear-gradient(135deg,#E8EAF6,#F3E5F5);color:#4527A0;border:1px solid #B39DDB;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:'Noto Sans KR',sans-serif">
+          🔌 연결 테스트
+        </button>
+        <div id="geminiTestMsg" style="font-size:12px;margin-top:8px;min-height:18px;text-align:center"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 설정 안내 -->
+  <div style="background:var(--cream-dark);border-radius:12px;padding:16px 18px;font-size:12px;color:var(--text-muted);line-height:1.8">
+    <div style="font-weight:600;color:var(--brown);margin-bottom:6px">📌 Gemini API 키 발급 방법</div>
+    1. <a href="https://aistudio.google.com/app/apikey" target="_blank" style="color:var(--gold-dark)">Google AI Studio</a> 접속<br>
+    2. Google 계정으로 로그인<br>
+    3. <strong>Create API Key</strong> 클릭<br>
+    4. 생성된 키(AIza...로 시작)를 위 입력란에 붙여넣기<br>
+    5. <strong>저장</strong> 버튼 클릭 → 채점 시 Gemini가 사용됩니다<br><br>
+    <span style="color:#2E7D32">✅ Gemini API는 월 일정량까지 <strong>무료</strong>로 사용 가능합니다</span><br>
+    <span style="color:#666">🔒 API 키는 이 기기의 브라우저에만 저장되며 외부로 전송되지 않습니다</span>
+  </div>
 </div>
 
 </div><!-- /main -->
@@ -865,12 +959,13 @@ function goSection(name){
   document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
   document.getElementById('sec-'+name).classList.add('active');
   const tabs=document.querySelectorAll('.nav-tab');
-  const map={'home':0,'test-select':1,'records':2,'ai-guide':3,'browse':4};
+  const map={'home':0,'test-select':1,'records':2,'ai-guide':3,'browse':4,'settings':5};
   tabs.forEach(t=>t.classList.remove('active'));
   if(map[name]!==undefined) tabs[map[name]]?.classList.add('active');
   if(name==='records') renderRecords();
   if(name==='test-select') renderSeriesList();
   if(name==='browse') renderBrowse();
+  if(name==='settings') initSettingsUI();
 }
 
 // ══════════════════════════════════════════════════
@@ -994,6 +1089,9 @@ function startSelectedTest(){
   document.getElementById('batchSub').textContent =
     `총 ${batchVerses.length}구절 · 구절당 10점 · ${batchVerses.length*10}점 만점`;
   buildAnswerBlocks();
+  // 채점 버튼 엔진 뱃지 업데이트
+  const badge = document.getElementById('engineBadge');
+  if(badge){ const e=getCurrentEngine(); badge.textContent=e==='gemini'?'Gemini':'Claude'; }
   goSection('batch-test');
 }
 
@@ -1118,23 +1216,32 @@ async function submitBatchTest(){
 답안 및 정답:
 ${answerText}`;
 
-  try {
-    log('🤖 AI 채점 요청 중...');
-    const resp = await fetch("https://api.anthropic.com/v1/messages", {
-      method:"POST",
-      headers:{"Content-Type":"application/json"},
-      body: JSON.stringify({
-        model:"claude-sonnet-4-20250514",
-        max_tokens:4000,
-        system:"당신은 성경암송 채점 전문가입니다. 반드시 순수 JSON만 응답하세요. 마크다운 코드블록(```json)을 절대 사용하지 마세요.",
-        messages:[{role:"user",content:prompt}]
-      })
-    });
-    const data = await resp.json();
-    log('✅ AI 응답 수신');
+  const engine = getCurrentEngine();
+  log(`🤖 AI 채점 요청 중... (엔진: ${engine==='gemini'?'Gemini':'Claude'})`);
 
-    let raw = (data.content?.[0]?.text || '').trim();
-    // 혹시 마크다운 감싸진 경우 제거
+  try {
+    let raw = '';
+
+    if(engine === 'gemini'){
+      // ── Gemini 채점 ──
+      raw = await callGemini(prompt, 4000);
+    } else {
+      // ── Claude 채점 (기본) ──
+      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body: JSON.stringify({
+          model:"claude-sonnet-4-20250514",
+          max_tokens:4000,
+          system:"당신은 성경암송 채점 전문가입니다. 반드시 순수 JSON만 응답하세요. 마크다운 코드블록(```json)을 절대 사용하지 마세요.",
+          messages:[{role:"user",content:prompt}]
+        })
+      });
+      const data = await resp.json();
+      raw = (data.content?.[0]?.text || '').trim();
+    }
+
+    log('✅ AI 응답 수신');
     raw = raw.replace(/^```json\s*/,'').replace(/\s*```$/,'').trim();
 
     let gradeData;
@@ -1401,6 +1508,124 @@ function renderRecords(){
 }
 
 // ══════════════════════════════════════════════════
+// AI 엔진 관리 (Claude 기본 + Gemini 선택)
+// ══════════════════════════════════════════════════
+function getCurrentEngine(){ return localStorage.getItem('ai_engine')||'claude'; }
+function getGeminiKey()    { return localStorage.getItem('gemini_api_key')||''; }
+function getGeminiModel()  { return localStorage.getItem('gemini_model')||'gemini-2.0-flash'; }
+
+function selectEngine(engine){
+  localStorage.setItem('ai_engine', engine);
+  // UI 업데이트
+  ['claude','gemini'].forEach(e=>{
+    const card  = document.getElementById('engine-'+e);
+    const check = document.getElementById('check-'+e);
+    const badge = document.getElementById('badge-'+e);
+    if(!card) return;
+    if(e===engine){
+      card.style.borderColor = 'var(--gold)';
+      card.style.background  = 'rgba(201,168,76,0.06)';
+      check.textContent = '✅';
+      if(badge){ badge.style.display='inline'; }
+    } else {
+      card.style.borderColor = 'var(--cream-dark)';
+      card.style.background  = 'white';
+      check.textContent = '☐';
+      check.style.color = '#ccc';
+      if(badge){ badge.style.display='none'; }
+    }
+  });
+  // Gemini 키 입력란 표시/숨김
+  const keyArea = document.getElementById('gemini-key-area');
+  if(keyArea) keyArea.style.display = engine==='gemini' ? 'block' : 'none';
+  // 저장된 키 불러오기
+  if(engine==='gemini'){
+    const inp = document.getElementById('geminiKeyInput');
+    const sel = document.getElementById('geminiModel');
+    if(inp) inp.value = getGeminiKey();
+    if(sel) sel.value = getGeminiModel();
+  }
+}
+
+function saveGeminiKey(){
+  const key = document.getElementById('geminiKeyInput').value.trim();
+  const model = document.getElementById('geminiModel').value;
+  const msg = document.getElementById('geminiKeyMsg');
+  if(!key){ msg.style.color='#C62828'; msg.textContent='키를 입력하세요'; return; }
+  if(!key.startsWith('AIza')){ msg.style.color='#C62828'; msg.textContent='올바른 Gemini API 키 형식이 아닙니다 (AIza...)'; return; }
+  localStorage.setItem('gemini_api_key', key);
+  localStorage.setItem('gemini_model', model);
+  msg.style.color='#2E7D32';
+  msg.textContent='✅ 저장됐습니다. 이제 채점 시 Gemini를 사용합니다.';
+  setTimeout(()=>msg.textContent='', 3000);
+}
+
+async function testGemini(){
+  const key   = document.getElementById('geminiKeyInput').value.trim();
+  const model = document.getElementById('geminiModel').value;
+  const msg   = document.getElementById('geminiTestMsg');
+  if(!key){ msg.style.color='#C62828'; msg.textContent='API 키를 먼저 입력하세요'; return; }
+  msg.style.color='#666'; msg.textContent='🔄 연결 테스트 중...';
+  try{
+    const text = await callGeminiRaw(key, model, '안녕하세요. 간단히 "연결 성공"이라고만 답해주세요.', 50);
+    msg.style.color='#2E7D32';
+    msg.textContent='✅ 연결 성공! 응답: '+text.slice(0,40);
+  }catch(e){
+    msg.style.color='#C62828';
+    msg.textContent='❌ 연결 실패: '+e.message;
+  }
+}
+
+// 설정 화면 진입 시 현재 엔진 상태 반영
+function initSettingsUI(){
+  const engine = getCurrentEngine();
+  selectEngine(engine);
+}
+
+// ── Gemini API 호출 ──
+async function callGeminiRaw(key, model, prompt, maxTokens=2000){
+  const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`;
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      contents:[{parts:[{text:prompt}]}],
+      generationConfig:{maxOutputTokens:maxTokens, temperature:0.1}
+    })
+  });
+  if(!res.ok){
+    const err = await res.json().catch(()=>({}));
+    throw new Error(err?.error?.message || `HTTP ${res.status}`);
+  }
+  const d = await res.json();
+  return d.candidates?.[0]?.content?.parts?.[0]?.text || '';
+}
+
+async function callGemini(prompt, maxTokens=2000){
+  const key   = getGeminiKey();
+  const model = getGeminiModel();
+  if(!key) throw new Error('Gemini API 키가 설정되지 않았습니다. 설정 메뉴에서 입력하세요.');
+  return callGeminiRaw(key, model, prompt, maxTokens);
+}
+
+// ── 통합 AI 호출 (엔진 자동 선택) ──
+async function callAI(prompt, maxTokens=800){
+  const engine = getCurrentEngine();
+  if(engine==='gemini'){
+    return callGemini(prompt, maxTokens);
+  }
+  // Claude (기본)
+  const r = await fetch('https://api.anthropic.com/v1/messages',{
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:maxTokens,
+      system:'네비게이토 성경암송 학습 보조자입니다. 한국어로 친절하게 답변하세요.',
+      messages:[{role:'user',content:prompt}]})
+  });
+  const d=await r.json();
+  return d.content?.[0]?.text||'응답을 받지 못했습니다.';
+}
+
+// ══════════════════════════════════════════════════
 // AI 도우미
 // ══════════════════════════════════════════════════
 async function callClaude(prompt){
@@ -1423,7 +1648,7 @@ async function askAI(type){
   else if(type==='memory_tip') p=`"${v.ref}" "${v.text}" — 이 구절을 쉽게 외울 연상법과 핵심 키워드를 알려주세요.`;
   else if(type==='quiz') p=`"${v.ref}" — "${v.text}" 이 구절로 빈칸 채우기 퀴즈 3문제를 만들어주세요. 답도 포함.`;
   else if(type==='series_overview') p=`네비게이토 주제별 성경암송 A~E 파트(새로운삶/전파함/의뢰함/제자자격/닮아감)의 주제와 연결고리를 설명해주세요.`;
-  const res=await callClaude(p);
+  const res=await callAI(p);
   txt.className=''; txt.textContent=res;
 }
 async function askAICustom(){
@@ -1432,7 +1657,7 @@ async function askAICustom(){
   const box=document.getElementById('aiAnswerBox');
   const txt=document.getElementById('aiAnswerText');
   box.style.display='block'; txt.className='ai-loading'; txt.textContent='AI가 답변 중...';
-  const res=await callClaude('네비게이토 성경암송 관련: '+q);
+  const res=await callAI('네비게이토 성경암송 관련: '+q);
   txt.className=''; txt.textContent=res;
 }
 
